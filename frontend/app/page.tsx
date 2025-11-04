@@ -1,11 +1,11 @@
 "use client"
 
 import { useState } from "react"
-import GardenHeader from "@/components/garden-header"
-import GardenGrid from "@/components/garden-grid"
+import AppHeader from "@/components/app-header"
+import AquariumGrid from "@/components/aquarium-grid"
 import StatsSidebar from "@/components/stats-sidebar"
-import PlantDetailsModal from "@/components/plant-details-modal"
-import PlantSeedModal from "@/components/plant-seed-modal"
+import FishDetailsModal from "@/components/fish-details-modal"
+import CastLineModal from "@/components/cast-line-modal"
 import AuroraBackground from "@/components/visual-effects/aurora-background"
 import { Fish, FishRarity } from "@/types/fish"
 
@@ -56,26 +56,26 @@ export default function Home() {
     <div className="min-h-screen bg-background relative overflow-hidden">
       <AuroraBackground />
       <div className="relative z-10">
-        <GardenHeader schedulerRunning={false} />
+        <AppHeader schedulerRunning={false} />
         <div className="flex gap-6 p-6 max-w-7xl mx-auto">
           <main className="flex-1">
-            <GardenGrid 
-              onSelectPlant={setSelectedFishId} 
-              onPlantSeed={() => setShowCastModal(true)} 
+            <AquariumGrid 
+              onSelectFish={setSelectedFishId} 
+              onCastLine={() => setShowCastModal(true)} 
             />
           </main>
           <aside className="w-80">
-            <StatsSidebar selectedPlantId={selectedFishId} />
+            <StatsSidebar selectedFishId={selectedFishId} />
           </aside>
         </div>
 
         {/* Modals */}
-        <PlantDetailsModal
-          plant={selectedFish}
+        <FishDetailsModal
+          fish={selectedFish}
           isOpen={!!selectedFishId}
           onClose={() => setSelectedFishId(null)}
         />
-        <PlantSeedModal 
+        <CastLineModal 
           isOpen={showCastModal} 
           onClose={() => setShowCastModal(false)} 
         />

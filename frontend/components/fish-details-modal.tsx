@@ -2,7 +2,6 @@
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Waves, Sparkles, Weight, Coins, Anchor, Clock } from "lucide-react"
 import { Fish, FishRarity, RARITY_NAMES, FISH_REWARD_MULTIPLIERS } from "@/types/fish"
@@ -21,8 +20,8 @@ const RARITY_BACKGROUNDS = {
   [FishRarity.LEGENDARY]: "from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950",
 }
 
-interface PlantDetailsModalProps {
-  plant: Fish | null | any
+interface FishDetailsModalProps {
+  fish: Fish | null | any
   isOpen: boolean
   onClose: () => void
 }
@@ -38,7 +37,7 @@ function formatTimeAgo(timestamp: number): string {
   return `${days}d ago`
 }
 
-export default function PlantDetailsModal({ plant: fish, isOpen, onClose }: PlantDetailsModalProps) {
+export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsModalProps) {
   const loading = false
 
   if (!fish || fish.rarity === undefined) return null
@@ -51,7 +50,6 @@ export default function PlantDetailsModal({ plant: fish, isOpen, onClose }: Plan
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md bg-card/95 backdrop-blur-sm border-2 p-0 gap-0 max-h-[85vh] overflow-hidden flex flex-col">
-        {/* Fixed Header */}
         <div className="px-6 pt-6 pb-3 border-b bg-card/95 sticky top-0 z-10">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -63,17 +61,14 @@ export default function PlantDetailsModal({ plant: fish, isOpen, onClose }: Plan
           </DialogHeader>
         </div>
 
-        {/* Scrollable Content */}
         <div className="overflow-y-auto flex-1">
           <div className="p-6 space-y-4">
-            {/* Fish visualization */}
             <div
               className={`h-40 rounded-lg flex items-center justify-center relative overflow-hidden bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]}`}
             >
               <div className="text-8xl">{RARITY_EMOJIS[rarity]}</div>
             </div>
 
-            {/* Basic Info */}
             <Card className="p-4 space-y-3 bg-muted/30">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">Species</span>
@@ -106,7 +101,6 @@ export default function PlantDetailsModal({ plant: fish, isOpen, onClose }: Plan
               </div>
             </Card>
 
-            {/* Catch Time */}
             <Card className="p-4 space-y-2 bg-blue-500/10 border-blue-500/20">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-blue-500" />
@@ -115,7 +109,6 @@ export default function PlantDetailsModal({ plant: fish, isOpen, onClose }: Plan
               <p className="text-sm text-muted-foreground">{formatTimeAgo(fish.catchTime)}</p>
             </Card>
 
-            {/* Rewards */}
             <Card className="p-4 space-y-2 bg-green-500/10 border-green-500/20">
               <div className="flex items-center gap-2">
                 <Coins className="w-4 h-4 text-green-500" />
@@ -129,7 +122,6 @@ export default function PlantDetailsModal({ plant: fish, isOpen, onClose }: Plan
               </p>
             </Card>
 
-            {/* Info Box */}
             <Card className="p-3 bg-primary/10 border-primary/20">
               <p className="text-xs text-muted-foreground">
                 🎣 <strong>Congratulations!</strong> You caught a {rarityKey} {fish.species}!
@@ -142,7 +134,6 @@ export default function PlantDetailsModal({ plant: fish, isOpen, onClose }: Plan
           </div>
         </div>
 
-        {/* Fixed Footer */}
         <div className="px-6 py-4 border-t bg-card/95 space-y-2">
           <Button
             onClick={() => console.log("Claim rewards")}
@@ -174,3 +165,5 @@ export default function PlantDetailsModal({ plant: fish, isOpen, onClose }: Plan
     </Dialog>
   )
 }
+
+

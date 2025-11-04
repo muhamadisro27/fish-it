@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Waves, Sparkles, Clock, Weight, Anchor } from "lucide-react"
-import { Fish, FishRarity, RARITY_NAMES } from "@/types/fish"
+import { FishRarity, RARITY_NAMES } from "@/types/fish"
 
 const RARITY_COLORS = {
   common: "bg-gray-100 text-gray-900 dark:bg-gray-900 dark:text-gray-100",
@@ -51,12 +51,10 @@ function formatTimeAgo(timestamp: number): string {
   return `${days}d ago`
 }
 
-export default function PlantCard({ plant: fish }: { plant: any }) {
+export default function FishCard({ fish }: { fish: any }) {
   if (!fish || fish.rarity === undefined) return null
   const rarity = fish.rarity as FishRarity
   const rarityKey = RARITY_NAMES[rarity] as keyof typeof RARITY_COLORS
-  
-  // Mock progress based on time caught (100% for caught fish)
   const progress = fish.isCaught ? 100 : 50
 
   return (
@@ -68,21 +66,18 @@ export default function PlantCard({ plant: fish }: { plant: any }) {
         transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
-      {/* Fish visualization */}
       <div className={`h-48 flex items-center justify-center relative overflow-hidden transition-all duration-500 ease-out group-hover:brightness-110 bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]} ${RARITY_HOVER_BACKGROUNDS[rarity]}`}>
-        {/* Glow effect overlay */}
         <div className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 ${
           rarity === FishRarity.COMMON ? 'bg-gray-400/20 blur-xl' :
           rarity === FishRarity.RARE ? 'bg-blue-400/20 blur-xl' :
           rarity === FishRarity.EPIC ? 'bg-purple-400/20 blur-xl' :
           'bg-orange-400/20 blur-xl'
         }`} />
-        
+
         <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
           {RARITY_EMOJIS[rarity]}
         </div>
-        
-        {/* Rarity-specific decorations */}
+
         {rarity === FishRarity.COMMON && (
           <>
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-2 bg-gray-600/20 dark:bg-gray-400/20 rounded-full" />
@@ -116,7 +111,6 @@ export default function PlantCard({ plant: fish }: { plant: any }) {
         )}
       </div>
 
-      {/* Fish info */}
       <div className="p-4 space-y-4">
         <div className="flex items-start justify-between">
           <div>
@@ -134,7 +128,6 @@ export default function PlantCard({ plant: fish }: { plant: any }) {
           </div>
         </div>
 
-        {/* Weight */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-1 text-foreground">
@@ -146,7 +139,6 @@ export default function PlantCard({ plant: fish }: { plant: any }) {
           <Progress value={progress} className="h-2" />
         </div>
 
-        {/* Stake Amount */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="flex items-center gap-1 text-foreground">
@@ -157,7 +149,6 @@ export default function PlantCard({ plant: fish }: { plant: any }) {
           </div>
         </div>
 
-        {/* Meta info */}
         <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t border-border">
           <p className="flex items-center gap-1">
             <Waves className="w-3 h-3" />
@@ -172,3 +163,5 @@ export default function PlantCard({ plant: fish }: { plant: any }) {
     </Card>
   )
 }
+
+

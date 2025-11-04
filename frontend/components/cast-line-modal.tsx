@@ -3,15 +3,15 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Sparkles, Coins, Anchor } from "lucide-react"
+import { Sparkles, Anchor } from "lucide-react"
 import { BAIT_PRICES } from "@/types/fish"
 
-interface PlantSeedModalProps {
+interface CastLineModalProps {
   isOpen: boolean
   onClose: () => void
 }
 
-export default function PlantSeedModal({ isOpen, onClose }: PlantSeedModalProps) {
+export default function CastLineModal({ isOpen, onClose }: CastLineModalProps) {
   const loading = false
 
   const handleCast = () => {
@@ -31,7 +31,6 @@ export default function PlantSeedModal({ isOpen, onClose }: PlantSeedModalProps)
         </DialogHeader>
 
         <div className="space-y-4">
-          {/* Fishing card */}
           <Card className="p-6 border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
             <div className="text-center">
               <div className="text-6xl mb-4">🎣</div>
@@ -40,7 +39,6 @@ export default function PlantSeedModal({ isOpen, onClose }: PlantSeedModalProps)
                 Stake FISH tokens and use bait to catch unique NFT fish
               </p>
 
-              {/* Bait types preview */}
               <div className="flex justify-center gap-2 mb-4 flex-wrap">
                 <span className="text-2xl" title="Common">🐟</span>
                 <span className="text-xl text-muted-foreground">→</span>
@@ -51,7 +49,6 @@ export default function PlantSeedModal({ isOpen, onClose }: PlantSeedModalProps)
                 <span className="text-2xl" title="Legendary">🐉</span>
               </div>
 
-              {/* Bait prices */}
               <div className="bg-card border border-border rounded-lg p-3 space-y-2">
                 <p className="text-xs text-muted-foreground mb-2 font-semibold">Bait Shop</p>
                 <div className="grid grid-cols-2 gap-2 text-xs">
@@ -76,7 +73,6 @@ export default function PlantSeedModal({ isOpen, onClose }: PlantSeedModalProps)
             </div>
           </Card>
 
-          {/* Info card */}
           <Card className="p-3 bg-muted/30 border-primary/20">
             <p className="text-xs text-muted-foreground">
               🎯 <strong>Better bait = Rarer fish</strong>
@@ -91,7 +87,6 @@ export default function PlantSeedModal({ isOpen, onClose }: PlantSeedModalProps)
             </p>
           </Card>
 
-          {/* Action buttons */}
           <div className="flex gap-2 pt-2">
             <Button
               variant="outline"
@@ -124,3 +119,5 @@ export default function PlantSeedModal({ isOpen, onClose }: PlantSeedModalProps)
     </Dialog>
   )
 }
+
+

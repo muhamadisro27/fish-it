@@ -5,7 +5,7 @@ import { Fish as FishIcon, Sparkles, Coins, Waves, Clock, Anchor } from "lucide-
 import { FishRarity, BAIT_PRICES } from "@/types/fish"
 
 interface StatsSidebarProps {
-  selectedPlantId: bigint | null
+  selectedFishId: bigint | null
 }
 
 // Hardcoded stats untuk demo
@@ -17,7 +17,7 @@ const MOCK_STATS = {
   legendaryFish: 0,
 }
 
-export default function StatsSidebar({ selectedPlantId }: StatsSidebarProps) {
+export default function StatsSidebar({ selectedFishId }: StatsSidebarProps) {
   const isConnected = true // Hardcoded untuk demo
   const address = "0x1234...5678"
 
