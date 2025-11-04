@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract FishItFaucet is Ownable {
     IERC20 public fsht;
 
-    uint256 public constant CLAIM_AMOUNT = 10 * 10 ** 18; // 10 FSHT
+    uint256 public constant CLAIM_AMOUNT = 10 * 10 ** 18;
     uint256 public constant CLAIM_COOLDOWN = 24 hours;
 
     mapping(address => uint256) public lastClaimTime;
@@ -19,7 +19,7 @@ contract FishItFaucet is Ownable {
     }
 
     function claim() external {
-        require(_canClaim(msg.sender), "Cooldown active");
+        require(canClaim(msg.sender), "Cooldown active");
 
         lastClaimTime[msg.sender] = block.timestamp;
         require(fsht.transfer(msg.sender, CLAIM_AMOUNT), "Transfer failed");
@@ -31,12 +31,12 @@ contract FishItFaucet is Ownable {
         );
     }
 
-    function _canClaim(address user) private view returns (bool) {
+    function canClaim(address user) public view returns (bool) {
         return block.timestamp >= lastClaimTime[user] + CLAIM_COOLDOWN;
     }
 
     function getNextClaimTime(address user) external view returns (uint256) {
-        if (_canClaim(user)) return block.timestamp;
+        if (canClaim(user)) return block.timestamp;
         return lastClaimTime[user] + CLAIM_COOLDOWN;
     }
 

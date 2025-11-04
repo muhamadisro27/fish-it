@@ -19,7 +19,8 @@ contract FishItStaking is Ownable, ReentrancyGuard {
         Idle,
         Chumming,
         Casting,
-        Strike
+        Strike,
+        ReadyToClaim
     }
 
     struct StakeInfo {
@@ -29,10 +30,11 @@ contract FishItStaking is Ownable, ReentrancyGuard {
         uint256 castingStartTime;
         uint256 strikeStartTime;
         FishingState state;
+        string nftCID; // ✅ Backend stores CID here
     }
 
-    uint256 public constant CASTING_DURATION = 60 seconds; // ✅ FIXED: Wait 1 minute in CASTING
-    uint256 public constant STRIKE_WINDOW = 30 seconds; // 30 seconds to unstake
+    uint256 public constant CASTING_DURATION = 60 seconds;
+    uint256 public constant STRIKE_WINDOW = 30 seconds;
 
     mapping(address => StakeInfo) public stakes;
 
@@ -56,7 +58,8 @@ contract FishItStaking is Ownable, ReentrancyGuard {
         uint256 lostAmount,
         FishItTypes.BaitType lostBait
     );
-    event NFTMinted(address indexed user, string cid, uint256 reward);
+    event NFTReady(address indexed user, string cid); // ✅ NEW: Backend signals ready
+    event NFTClaimed(address indexed user, uint256 tokenId, uint256 reward); // ✅ NEW: User claimed
 
     constructor(
         address fshtAddr,
@@ -70,7 +73,7 @@ contract FishItStaking is Ownable, ReentrancyGuard {
     }
 
     // ========================================
-    // PHASE 1: CHUMMING (Instant start)
+    // PHASE 1: CHUMMING
     // ========================================
     function startFishing(
         uint256 amount,
@@ -86,13 +89,10 @@ contract FishItStaking is Ownable, ReentrancyGuard {
             "No bait available"
         );
 
-        // Transfer stake tokens
         require(
             fsht.transferFrom(msg.sender, address(this), amount),
             "Stake transfer failed"
         );
-
-        // Consume bait from BaitShop
         baitShop.consumeBait(msg.sender, baitType);
 
         stakes[msg.sender] = StakeInfo({
@@ -101,7 +101,8 @@ contract FishItStaking is Ownable, ReentrancyGuard {
             chummingStartTime: block.timestamp,
             castingStartTime: 0,
             strikeStartTime: 0,
-            state: FishingState.Chumming
+            state: FishingState.Chumming,
+            nftCID: ""
         });
 
         emit FishingStarted(msg.sender, amount, baitType);
@@ -109,7 +110,7 @@ contract FishItStaking is Ownable, ReentrancyGuard {
     }
 
     // ========================================
-    // PHASE 2: CASTING (Instant transition, no wait)
+    // PHASE 2: CASTING
     // ========================================
     function enterCastingPhase() external {
         StakeInfo storage s = stakes[msg.sender];
@@ -122,7 +123,7 @@ contract FishItStaking is Ownable, ReentrancyGuard {
     }
 
     // ========================================
-    // PHASE 3: STRIKE (After 1 minute in CASTING)
+    // PHASE 3: STRIKE
     // ========================================
     function enterStrikePhase() external {
         StakeInfo storage s = stakes[msg.sender];
@@ -130,7 +131,7 @@ contract FishItStaking is Ownable, ReentrancyGuard {
         require(
             block.timestamp >= s.castingStartTime + CASTING_DURATION,
             "Wait 1 minute"
-        ); // ✅ FIXED
+        );
 
         s.strikeStartTime = block.timestamp;
         s.state = FishingState.Strike;
@@ -138,29 +139,27 @@ contract FishItStaking is Ownable, ReentrancyGuard {
         emit StateChanged(msg.sender, FishingState.Strike, block.timestamp);
     }
 
+    // ========================================
+    // UNSTAKE - Just emit event for backend
+    // ========================================
     function unstake() external nonReentrant {
         StakeInfo storage s = stakes[msg.sender];
         require(s.state == FishingState.Strike, "Not in strike phase");
 
         uint256 timeInStrike = block.timestamp - s.strikeStartTime;
 
-        // Check if within 30 second window
         if (timeInStrike <= STRIKE_WINDOW) {
-            // SUCCESS - Fish caught!
-            // ✅ FIXED: Just emit event with stake amount and bait type
-            // Backend will calculate RNG
+            // SUCCESS - Emit event for backend to process
             emit FishCaught(msg.sender, s.amount, s.baitType);
 
-            // Keep stake data for mintNFT
-            s.state = FishingState.Idle;
+            // State stays for backend to set CID
+            // Don't change state yet - backend will set it to ReadyToClaim
         } else {
-            // FAILED - Fish escaped, burn everything
+            // FAILED - Fish escaped
             uint256 lostAmount = s.amount;
             FishItTypes.BaitType lostBait = s.baitType;
 
-            // Burn tokens (send to owner or burn address)
             require(fsht.transfer(owner(), s.amount), "Burn transfer failed");
-
             delete stakes[msg.sender];
 
             emit FishEscaped(msg.sender, lostAmount, lostBait);
@@ -168,51 +167,43 @@ contract FishItStaking is Ownable, ReentrancyGuard {
     }
 
     // ========================================
-    // Mint NFT & Return Rewards (Owner/Backend)
+    // BACKEND: Prepare NFT (Owner only)
+    // ✅ Backend calls this after generating image
     // ========================================
-    function mintNFT(
-        address user,
-        string memory cid
-    ) external onlyOwner nonReentrant {
+    function prepareNFT(address user, string memory cid) external onlyOwner {
         StakeInfo storage s = stakes[user];
-        require(
-            s.state == FishingState.Idle && s.amount > 0,
-            "Invalid stake state"
-        );
+        require(s.state == FishingState.Strike, "User hasn't unstaked yet");
+        require(s.amount > 0, "Invalid stake");
+        require(bytes(s.nftCID).length == 0, "Already prepared");
 
-        // Mint NFT
-        nft.safeMint(user, cid);
+        // Store CID and change state
+        s.nftCID = cid;
+        s.state = FishingState.ReadyToClaim;
 
-        // Calculate reward (1% base)
-        uint256 reward = (s.amount * 1) / 100;
-        uint256 total = s.amount + reward;
-
-        delete stakes[user];
-
-        // Return stake + reward
-        require(fsht.transfer(user, total), "Reward transfer failed");
-
-        emit NFTMinted(user, cid, reward);
+        emit NFTReady(user, cid);
     }
 
     // ========================================
-    // Emergency: Force timeout check
+    // USER: Claim Reward
+    // ✅ User calls this after backend prepares NFT
     // ========================================
-    function forceTimeout(address user) external {
-        StakeInfo storage s = stakes[user];
-        require(s.state == FishingState.Strike, "Not in strike phase");
+    function claimReward() external nonReentrant {
+        StakeInfo storage s = stakes[msg.sender];
+        require(s.state == FishingState.ReadyToClaim, "NFT not ready yet");
+        require(bytes(s.nftCID).length > 0, "No CID available");
 
-        uint256 timeInStrike = block.timestamp - s.strikeStartTime;
-        require(timeInStrike > STRIKE_WINDOW, "Still in window");
+        // Mint NFT
+        uint256 tokenId = nft.safeMint(msg.sender, s.nftCID);
 
-        // Fish escaped
-        uint256 lostAmount = s.amount;
-        FishItTypes.BaitType lostBait = s.baitType;
+        // Calculate and transfer reward
+        uint256 reward = (s.amount * 1) / 100;
+        uint256 total = s.amount + reward;
 
-        require(fsht.transfer(owner(), s.amount), "Burn transfer failed");
-        delete stakes[user];
+        delete stakes[msg.sender];
 
-        emit FishEscaped(user, lostAmount, lostBait);
+        require(fsht.transfer(msg.sender, total), "Reward transfer failed");
+
+        emit NFTClaimed(msg.sender, tokenId, reward);
     }
 
     // ========================================
@@ -227,7 +218,8 @@ contract FishItStaking is Ownable, ReentrancyGuard {
             uint256 amount,
             FishItTypes.BaitType baitType,
             FishingState state,
-            uint256 timeInCurrentState
+            uint256 timeInCurrentState,
+            string memory nftCID
         )
     {
         StakeInfo memory s = stakes[user];
@@ -241,14 +233,14 @@ contract FishItStaking is Ownable, ReentrancyGuard {
             timeElapsed = block.timestamp - s.strikeStartTime;
         }
 
-        return (s.amount, s.baitType, s.state, timeElapsed);
+        return (s.amount, s.baitType, s.state, timeElapsed, s.nftCID);
     }
 
     function canEnterStrike(address user) external view returns (bool) {
         StakeInfo memory s = stakes[user];
         return
             s.state == FishingState.Casting &&
-            block.timestamp >= s.castingStartTime + CASTING_DURATION; // ✅ FIXED
+            block.timestamp >= s.castingStartTime + CASTING_DURATION;
     }
 
     function getStrikeTimeRemaining(
@@ -275,7 +267,10 @@ contract FishItStaking is Ownable, ReentrancyGuard {
         return CASTING_DURATION - elapsed;
     }
 
-    // Owner functions
+    function isReadyToClaim(address user) external view returns (bool) {
+        return stakes[user].state == FishingState.ReadyToClaim;
+    }
+
     function fundContract(uint256 amount) external onlyOwner {
         require(
             fsht.transferFrom(msg.sender, address(this), amount),
@@ -285,5 +280,22 @@ contract FishItStaking is Ownable, ReentrancyGuard {
 
     function getBalance() external view returns (uint256) {
         return fsht.balanceOf(address(this));
+    }
+
+    // Emergency: Force timeout
+    function forceTimeout(address user) external {
+        StakeInfo storage s = stakes[user];
+        require(s.state == FishingState.Strike, "Not in strike phase");
+
+        uint256 timeInStrike = block.timestamp - s.strikeStartTime;
+        require(timeInStrike > STRIKE_WINDOW, "Still in window");
+
+        uint256 lostAmount = s.amount;
+        FishItTypes.BaitType lostBait = s.baitType;
+
+        require(fsht.transfer(owner(), s.amount), "Burn transfer failed");
+        delete stakes[user];
+
+        emit FishEscaped(user, lostAmount, lostBait);
     }
 }

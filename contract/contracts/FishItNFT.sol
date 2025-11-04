@@ -9,14 +9,23 @@ contract FishItNFT is ERC721, ERC721URIStorage, Ownable {
     string public basePinataGateway = "https://gateway.pinata.cloud/ipfs/";
     uint256 private _nextTokenId;
 
+    // Allow staking contract to mint
+    mapping(address => bool) public minters;
+
     constructor(
         address initialOwner
     ) ERC721("FishIt NFT", "FISH") Ownable(initialOwner) {}
 
+    function setMinter(address minter, bool status) external onlyOwner {
+        minters[minter] = status;
+    }
+
     function safeMint(
         address to,
         string memory uri
-    ) external onlyOwner returns (uint256) {
+    ) external returns (uint256) {
+        require(msg.sender == owner() || minters[msg.sender], "Not authorized");
+
         uint256 tokenId = _nextTokenId++;
         _safeMint(to, tokenId);
         _setTokenURI(tokenId, uri);
