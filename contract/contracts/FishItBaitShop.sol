@@ -19,10 +19,10 @@ contract FishItBaitShop is Ownable {
 
     BaitPrice public prices =
         BaitPrice({
-            common: 1 * 10 ** 18, // 1 FSHT
-            rare: 5 * 10 ** 18, // 5 FSHT
-            epic: 10 * 10 ** 18, // 10 FSHT
-            legendary: 20 * 10 ** 18 // 20 FSHT
+            common: 1 * 10 ** 18,
+            rare: 5 * 10 ** 18,
+            epic: 10 * 10 ** 18,
+            legendary: 20 * 10 ** 18
         });
 
     mapping(address => mapping(FishItTypes.BaitType => uint256))
@@ -76,7 +76,6 @@ contract FishItBaitShop is Ownable {
         require(fsht.transfer(owner(), balance), "Withdraw failed");
     }
 
-    // Allow staking contract to consume bait
     function consumeBait(address user, FishItTypes.BaitType baitType) external {
         require(baitInventory[user][baitType] > 0, "No bait to consume");
         baitInventory[user][baitType] -= 1;
