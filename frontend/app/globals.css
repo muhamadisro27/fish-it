@@ -4,67 +4,81 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* FishIt Ocean Theme - Blue/Cyan for fishing theme */
-  /* Primary: Ocean blue for fishing theme */
-  --primary: oklch(0.55 0.15 230);
-  --primary-foreground: oklch(0.98 0 0);
+  /* Base navy gradient palette inspired by reference UI */
+  --background: #040b1f;
+  --foreground: #e5edff;
 
-  /* Accent: Cyan/turquoise for highlights */
-  --accent: oklch(0.75 0.12 200);
-  --accent-foreground: oklch(0.15 0 0);
+  --card: rgba(9, 23, 52, 0.85);
+  --card-foreground: #e8f1ff;
 
-  /* Secondary: Deep sea blue */
-  --secondary: oklch(0.45 0.08 240);
-  --secondary-foreground: oklch(0.95 0 0);
+  --popover: rgba(9, 23, 52, 0.92);
+  --popover-foreground: #e8f1ff;
 
-  /* Neutrals */
-  --background: oklch(0.98 0.01 230);
-  --foreground: oklch(0.15 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0 0);
-  --muted: oklch(0.88 0.02 230);
-  --muted-foreground: oklch(0.45 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.92 0.01 230);
-  --input: oklch(0.95 0.01 230);
-  --ring: oklch(0.55 0.15 230);
-  --chart-1: oklch(0.55 0.15 230);
-  --chart-2: oklch(0.75 0.12 200);
-  --chart-3: oklch(0.45 0.08 240);
-  --chart-4: oklch(0.6 0.1 210);
-  --chart-5: oklch(0.7 0.1 220);
-  --radius: 0.625rem;
+  --muted: rgba(18, 40, 76, 0.65);
+  --muted-foreground: rgba(167, 196, 255, 0.75);
+
+  --border: rgba(56, 102, 171, 0.35);
+  --input: rgba(15, 37, 71, 0.75);
+
+  --primary: #01c0ff;
+  --primary-foreground: #031226;
+
+  --secondary: #1b44a0;
+  --secondary-foreground: #f0f6ff;
+
+  --accent: #19e5ff;
+  --accent-foreground: #031226;
+
+  --destructive: #ff6b6b;
+  --destructive-foreground: #04122f;
+
+  --ring: #1cb5ff;
+
+  --chart-1: #01c0ff;
+  --chart-2: #4f6bff;
+  --chart-3: #0f7fff;
+  --chart-4: #22d3ee;
+  --chart-5: #5eead4;
+
+  --radius: 0.75rem;
 }
 
 .dark {
-  /* Dark mode colors for FishIt */
-  --primary: oklch(0.65 0.12 230);
-  --primary-foreground: oklch(0.98 0 0);
-  --accent: oklch(0.75 0.12 200);
-  --accent-foreground: oklch(0.15 0 0);
-  --secondary: oklch(0.5 0.08 240);
-  --secondary-foreground: oklch(0.95 0 0);
-  --background: oklch(0.12 0 0);
-  --foreground: oklch(0.95 0 0);
-  --card: oklch(0.18 0 0);
-  --card-foreground: oklch(0.95 0 0);
-  --popover: oklch(0.18 0 0);
-  --popover-foreground: oklch(0.95 0 0);
-  --muted: oklch(0.3 0 0);
-  --muted-foreground: oklch(0.65 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.98 0 0);
-  --border: oklch(0.25 0 0);
-  --input: oklch(0.22 0 0);
-  --ring: oklch(0.65 0.12 230);
-  --chart-1: oklch(0.65 0.12 230);
-  --chart-2: oklch(0.75 0.12 200);
-  --chart-3: oklch(0.5 0.08 240);
-  --chart-4: oklch(0.6 0.1 210);
-  --chart-5: oklch(0.7 0.1 220);
+  /* Maintain same palette for dark mode to ensure consistent navy look */
+  --background: #020714;
+  --foreground: #e8f1ff;
+
+  --card: rgba(7, 20, 45, 0.92);
+  --card-foreground: #e8f1ff;
+
+  --popover: rgba(7, 20, 45, 0.95);
+  --popover-foreground: #e8f1ff;
+
+  --muted: rgba(15, 35, 68, 0.75);
+  --muted-foreground: rgba(163, 195, 255, 0.8);
+
+  --border: rgba(40, 82, 155, 0.4);
+  --input: rgba(12, 30, 63, 0.85);
+
+  --primary: #01c0ff;
+  --primary-foreground: #031226;
+
+  --secondary: #234fba;
+  --secondary-foreground: #f0f6ff;
+
+  --accent: #25f2ff;
+  --accent-foreground: #031226;
+
+  --destructive: #ff7b7b;
+  --destructive-foreground: #07162f;
+
+  --ring: #29c0ff;
+
+  --chart-1: #01c0ff;
+  --chart-2: #4f6bff;
+  --chart-3: #0f7fff;
+  --chart-4: #22d3ee;
+  --chart-5: #5eead4;
 }
 
 @theme inline {
@@ -105,7 +119,10 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: radial-gradient(120% 120% at 50% 0%, rgba(20, 95, 255, 0.2), transparent 55%),
+      linear-gradient(180deg, #081d40 0%, #050c24 45%, #020612 100%);
+    color: var(--foreground);
   }
 }
 

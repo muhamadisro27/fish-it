@@ -59,20 +59,18 @@ export default function FishCard({ fish }: { fish: any }) {
 
   return (
     <Card
-      className={`overflow-hidden transition-all duration-500 ease-out animate-grow border-2 cursor-pointer group hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] active:scale-[0.98] ${
-        RARITY_BORDERS[rarity]
-      } hover:border-opacity-100 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]`}
+      className={`overflow-hidden transition-all duration-500 ease-out animate-grow border-2 cursor-pointer group hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] active:scale-[0.98] ${RARITY_BORDERS[rarity]
+        } hover:border-opacity-100 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)]`}
       style={{
         transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
       }}
     >
       <div className={`h-48 flex items-center justify-center relative overflow-hidden transition-all duration-500 ease-out group-hover:brightness-110 bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]} ${RARITY_HOVER_BACKGROUNDS[rarity]}`}>
-        <div className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 ${
-          rarity === FishRarity.COMMON ? 'bg-gray-400/20 blur-xl' :
+        <div className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 ${rarity === FishRarity.COMMON ? 'bg-gray-400/20 blur-xl' :
           rarity === FishRarity.RARE ? 'bg-blue-400/20 blur-xl' :
-          rarity === FishRarity.EPIC ? 'bg-purple-400/20 blur-xl' :
-          'bg-orange-400/20 blur-xl'
-        }`} />
+            rarity === FishRarity.EPIC ? 'bg-purple-400/20 blur-xl' :
+              'bg-orange-400/20 blur-xl'
+          }`} />
 
         <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
           {RARITY_EMOJIS[rarity]}

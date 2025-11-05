@@ -21,60 +21,63 @@ export default function CastLineModal({ isOpen, onClose }: CastLineModalProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-accent" />
+      <DialogContent className="max-w-md overflow-hidden rounded-3xl border border-cyan-500/25 bg-[#071a36]/95 shadow-[0_30px_90px_-40px_rgba(12,95,255,0.6)] backdrop-blur-xl">
+        <DialogHeader className="text-white">
+          <DialogTitle className="flex items-center gap-2 text-lg font-semibold">
+            <Sparkles className="w-5 h-5 text-[#29c0ff]" />
             Cast Your Fishing Line
           </DialogTitle>
-          <DialogDescription>Choose your bait and start fishing!</DialogDescription>
+          <DialogDescription className="text-cyan-100/70">
+            Choose your bait and start fishing!
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          <Card className="p-6 border-2 border-primary/30 bg-gradient-to-br from-primary/5 to-accent/5">
-            <div className="text-center">
-              <div className="text-6xl mb-4">🎣</div>
-              <h3 className="font-bold text-xl text-foreground mb-2">Cast Your Line</h3>
-              <p className="text-sm text-muted-foreground mb-4">
+          <Card className="relative overflow-hidden rounded-3xl border border-[#29c0ff]/25 bg-gradient-to-br from-[#0b1f43]/80 via-[#081b3a]/85 to-[#04122b]/90 p-6 text-center shadow-[0_25px_70px_-35px_rgba(12,95,255,0.7)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(42,119,255,0.25),_transparent_55%)]" />
+            <div className="relative z-10">
+              <div className="text-6xl mb-4 drop-shadow">🎣</div>
+              <h3 className="font-bold text-xl text-white mb-2">Cast Your Line</h3>
+              <p className="text-sm text-cyan-100/75 mb-4">
                 Stake FISH tokens and use bait to catch unique NFT fish
               </p>
 
-              <div className="flex justify-center gap-2 mb-4 flex-wrap">
-                <span className="text-2xl" title="Common">🐟</span>
-                <span className="text-xl text-muted-foreground">→</span>
-                <span className="text-2xl" title="Rare">🐠</span>
-                <span className="text-xl text-muted-foreground">→</span>
-                <span className="text-2xl" title="Epic">🦈</span>
-                <span className="text-xl text-muted-foreground">→</span>
-                <span className="text-2xl" title="Legendary">🐉</span>
+              <div className="flex justify-center gap-2 mb-4 flex-wrap text-2xl">
+                <span title="Common">🐟</span>
+                <span className="text-xl text-cyan-100/60">→</span>
+                <span title="Rare">🐠</span>
+                <span className="text-xl text-cyan-100/60">→</span>
+                <span title="Epic">🦈</span>
+                <span className="text-xl text-cyan-100/60">→</span>
+                <span title="Legendary">🐉</span>
               </div>
 
-              <div className="bg-card border border-border rounded-lg p-3 space-y-2">
-                <p className="text-xs text-muted-foreground mb-2 font-semibold">Bait Shop</p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Common</span>
-                    <span className="font-semibold">{BAIT_PRICES.Common} FISH</span>
+              <div className="rounded-2xl border border-white/10 bg-[#0b2347]/75 p-4 space-y-2 text-left text-xs text-cyan-100/80">
+                <p className="uppercase tracking-[0.2em] text-cyan-100/60 font-semibold">Bait Shop</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center justify-between">
+                    <span>Common</span>
+                    <span className="font-semibold text-white">{BAIT_PRICES.Common} FISH</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Rare</span>
-                    <span className="font-semibold text-blue-500">{BAIT_PRICES.Rare} FISH</span>
+                  <div className="flex items-center justify-between text-[#7fd4ff]">
+                    <span>Rare</span>
+                    <span className="font-semibold text-white">{BAIT_PRICES.Rare} FISH</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Epic</span>
-                    <span className="font-semibold text-purple-500">{BAIT_PRICES.Epic} FISH</span>
+                  <div className="flex items-center justify-between text-[#cabdff]">
+                    <span>Epic</span>
+                    <span className="font-semibold text-white">{BAIT_PRICES.Epic} FISH</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-muted-foreground">Legendary</span>
-                    <span className="font-semibold text-orange-500">{BAIT_PRICES.Legendary} FISH</span>
+                  <div className="flex items-center justify-between text-[#ffd6a5]">
+                    <span>Legendary</span>
+                    <span className="font-semibold text-white">{BAIT_PRICES.Legendary} FISH</span>
                   </div>
                 </div>
               </div>
             </div>
           </Card>
 
-          <Card className="p-3 bg-muted/30 border-primary/20">
-            <p className="text-xs text-muted-foreground">
+          <Card className="rounded-3xl border border-[#29c0ff]/25 bg-[#081f3f]/80 p-4 text-xs text-cyan-100/80">
+            <p>
               🎯 <strong>Better bait = Rarer fish</strong>
               <br />
               💰 <strong>Higher stakes = Higher rewards</strong>
@@ -87,11 +90,11 @@ export default function CastLineModal({ isOpen, onClose }: CastLineModalProps) {
             </p>
           </Card>
 
-          <div className="flex gap-2 pt-2">
+          <div className="flex gap-3 pt-2">
             <Button
               variant="outline"
               onClick={onClose}
-              className="flex-1 bg-transparent"
+              className="flex-1 rounded-full border border-white/20 bg-transparent text-cyan-100/80 hover:bg-white/10"
               disabled={loading}
             >
               Cancel
@@ -99,11 +102,11 @@ export default function CastLineModal({ isOpen, onClose }: CastLineModalProps) {
             <Button
               onClick={handleCast}
               disabled={loading}
-              className="flex-1 gap-2 bg-primary hover:bg-primary/90"
+              className="flex-1 gap-2 rounded-full bg-gradient-to-r from-[#21d4fd] via-[#0ab2ff] to-[#3d5fff] text-[#031226] font-semibold shadow-[0_18px_55px_-18px_rgba(9,193,255,0.95)] hover:shadow-[0_22px_65px_-18px_rgba(14,146,255,0.95)] transition-all"
             >
               {loading ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Casting...
                 </>
               ) : (
