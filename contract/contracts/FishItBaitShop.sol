@@ -46,16 +46,6 @@ contract FishItBaitShop is Ownable {
         fsht = IERC20(fshtAddr);
     }
 
-    modifier onlyConsumer() {
-        require(consumers[msg.sender], "Not authorized consumer");
-        _;
-    }
-
-    function setConsumer(address consumer, bool status) external onlyOwner {
-        consumers[consumer] = status;
-        emit ConsumerSet(consumer, status);
-    }
-
     function buyBait(FishItTypes.BaitType baitType, uint256 quantity) external {
         require(quantity > 0, "Quantity must be > 0");
 
@@ -72,10 +62,7 @@ contract FishItBaitShop is Ownable {
         emit BaitPurchased(msg.sender, baitType, quantity, totalCost);
     }
 
-    function consumeBait(
-        address user,
-        FishItTypes.BaitType baitType
-    ) external onlyConsumer {
+    function consumeBait(address user, FishItTypes.BaitType baitType) external {
         require(baitInventory[user][baitType] > 0, "No bait to consume");
         baitInventory[user][baitType] -= 1;
         emit BaitConsumed(user, baitType, msg.sender);
