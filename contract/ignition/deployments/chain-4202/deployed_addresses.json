@@ -1,0 +1,12 @@
+{
+  "FishItTokenModule#FishItToken": "0x99ba91f986253f90262408cB9C3e0bcB4A5f9148",
+  "FishItNFTModule#FishItNFT": "0xC97bEd395e6b78Bd82952eC9e9d63d68AFAFf8db",
+  "FishItFaucetModule#FishItFaucet": "0x5046EC501dF026eCeF4E8C7407d65258936ed90B",
+  "FishItBaitShopModule#FishItBaitShop": "0xaecD63822Cb77DF5aFaA9900B80603430624095c",
+  "FishItStakingModule#FishItStaking": "0xc898A499E1aF71c64d009B9dAa0929D7F0786361",
+  "FishItCompleteModule#FishItNFT": "0xDE843eD1882D4C71C65e1c2B7660B29e74652afE",
+  "FishItCompleteModule#FishItToken": "0x479D2b9dfF5119dD4111D361006be6Bf3DCA0FFC",
+  "FishItCompleteModule#FishItBaitShop": "0x225215A7cc2114f6e2D77c6FCc5d7f0BbDF4F9d1",
+  "FishItCompleteModule#FishItFaucet": "0x67F4e84b00c99e71FB37939176f7891923d06cff",
+  "FishItCompleteModule#FishItStaking": "0x33Fff3fAc113ca38ca84325066C2B659387B928c"
+}
