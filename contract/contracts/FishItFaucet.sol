@@ -13,6 +13,7 @@ contract FishItFaucet is Ownable {
     mapping(address => uint256) public lastClaimTime;
 
     event Claimed(address indexed user, uint256 amount, uint256 nextClaimTime);
+    event Funded(address indexed funder, uint256 amount);
 
     constructor(address fshtAddr, address initialOwner) Ownable(initialOwner) {
         fsht = IERC20(fshtAddr);
@@ -45,5 +46,10 @@ contract FishItFaucet is Ownable {
             fsht.transferFrom(msg.sender, address(this), amount),
             "Fund failed"
         );
+        emit Funded(msg.sender, amount);
+    }
+
+    function getBalance() external view returns (uint256) {
+        return fsht.balanceOf(address(this));
     }
 }
