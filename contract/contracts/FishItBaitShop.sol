@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import "./FishItTypes.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract FishItBaitShop is Ownable {
     IERC20 public fsht;
-
-    using FishItTypes for FishItTypes.BaitType;
 
     struct BaitPrice {
         uint256 common;
@@ -28,14 +26,34 @@ contract FishItBaitShop is Ownable {
     mapping(address => mapping(FishItTypes.BaitType => uint256))
         public baitInventory;
 
+    // Allow staking contract to consume bait
+    mapping(address => bool) public consumers;
+
     event BaitPurchased(
         address indexed user,
         FishItTypes.BaitType baitType,
-        uint256 quantity
+        uint256 quantity,
+        uint256 totalCost
     );
+    event BaitConsumed(
+        address indexed user,
+        FishItTypes.BaitType baitType,
+        address indexed consumer
+    );
+    event ConsumerSet(address indexed consumer, bool status);
 
     constructor(address fshtAddr, address initialOwner) Ownable(initialOwner) {
         fsht = IERC20(fshtAddr);
+    }
+
+    modifier onlyConsumer() {
+        require(consumers[msg.sender], "Not authorized consumer");
+        _;
+    }
+
+    function setConsumer(address consumer, bool status) external onlyOwner {
+        consumers[consumer] = status;
+        emit ConsumerSet(consumer, status);
     }
 
     function buyBait(FishItTypes.BaitType baitType, uint256 quantity) external {
@@ -51,7 +69,16 @@ contract FishItBaitShop is Ownable {
 
         baitInventory[msg.sender][baitType] += quantity;
 
-        emit BaitPurchased(msg.sender, baitType, quantity);
+        emit BaitPurchased(msg.sender, baitType, quantity, totalCost);
+    }
+
+    function consumeBait(
+        address user,
+        FishItTypes.BaitType baitType
+    ) external onlyConsumer {
+        require(baitInventory[user][baitType] > 0, "No bait to consume");
+        baitInventory[user][baitType] -= 1;
+        emit BaitConsumed(user, baitType, msg.sender);
     }
 
     function getBaitPrice(
@@ -74,10 +101,5 @@ contract FishItBaitShop is Ownable {
     function withdrawFunds() external onlyOwner {
         uint256 balance = fsht.balanceOf(address(this));
         require(fsht.transfer(owner(), balance), "Withdraw failed");
-    }
-
-    function consumeBait(address user, FishItTypes.BaitType baitType) external {
-        require(baitInventory[user][baitType] > 0, "No bait to consume");
-        baitInventory[user][baitType] -= 1;
     }
 }
