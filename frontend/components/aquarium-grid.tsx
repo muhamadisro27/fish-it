@@ -11,6 +11,9 @@ interface AquariumGridProps {
     onCastLine: () => void
 }
 
+// Use fixed timestamp to avoid hydration mismatch
+const BASE_TIME = 1706400000000 // Fixed timestamp
+
 const MOCK_FISH: Fish[] = [
     {
         id: BigInt(1),
@@ -20,7 +23,7 @@ const MOCK_FISH: Fish[] = [
         weight: 15.5,
         stakedAmount: 100,
         baitType: "Common",
-        catchTime: Date.now() - 3600000,
+        catchTime: BASE_TIME - 3600000, // 1h ago
         isCaught: true,
     },
     {
@@ -31,7 +34,7 @@ const MOCK_FISH: Fish[] = [
         weight: 22.3,
         stakedAmount: 200,
         baitType: "Rare",
-        catchTime: Date.now() - 7200000,
+        catchTime: BASE_TIME - 7200000, // 2h ago
         isCaught: true,
     },
     {
@@ -42,7 +45,7 @@ const MOCK_FISH: Fish[] = [
         weight: 45.8,
         stakedAmount: 500,
         baitType: "Epic",
-        catchTime: Date.now() - 10800000,
+        catchTime: BASE_TIME - 10800000, // 3h ago
         isCaught: true,
     },
 ]

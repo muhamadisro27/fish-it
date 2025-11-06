@@ -152,7 +152,7 @@ export default function FishCard({ fish }: { fish: any }) {
             <Waves className="w-3 h-3" />
             Bait: {fish.baitType}
           </p>
-          <p className="flex items-center gap-1">
+          <p className="flex items-center gap-1" suppressHydrationWarning>
             <Clock className="w-3 h-3" />
             Caught: {formatTimeAgo(fish.catchTime)}
           </p>

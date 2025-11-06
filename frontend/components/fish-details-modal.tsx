@@ -111,7 +111,7 @@ export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsM
                 <Clock className="w-4 h-4 text-[#29c0ff]" />
                 <span className="font-semibold">Caught</span>
               </div>
-              <p>{formatTimeAgo(fish.catchTime)}</p>
+              <p suppressHydrationWarning>{formatTimeAgo(fish.catchTime)}</p>
             </Card>
 
             <Card className="rounded-2xl border border-[#51f5c5]/35 bg-[#0a2e3d]/80 p-5 space-y-2 text-sm text-cyan-100/85">

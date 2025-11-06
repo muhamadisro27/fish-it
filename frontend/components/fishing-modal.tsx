@@ -1,6 +1,6 @@
 "use client"
 
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -52,7 +52,13 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
 
   // Blockchain hooks
   const { data: stakeInfo, refetch: refetchStakeInfo } = useStakeInfo(address)
-  const { data: baitInventory } = useBaitInventory(address, selectedBait)
+  
+  // Fetch inventory for all 4 bait types
+  const { data: commonBaitInventory } = useBaitInventory(address, 0)
+  const { data: rareBaitInventory } = useBaitInventory(address, 1)
+  const { data: epicBaitInventory } = useBaitInventory(address, 2)
+  const { data: legendaryBaitInventory } = useBaitInventory(address, 3)
+  
   const { data: allowance, refetch: refetchAllowance } = useTokenAllowance(address, CONTRACTS.FishItStaking)
   const { data: castingTimeLeft } = useCastingTimeRemaining(address)
   const { data: strikeTimeLeft } = useStrikeTimeRemaining(address)
@@ -64,10 +70,22 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
   const { enterStrike, isConfirming: isEnteringStrike, isConfirmed: isEnteredStrike } = useEnterStrikePhase()
   const { unstake, isConfirming: isUnstaking, isConfirmed: isUnstaked, isPending: isUnstakePending } = useUnstake()
 
+  // Get inventory for selected bait
+  const getBaitInventory = (baitType: 0 | 1 | 2 | 3): bigint => {
+    switch (baitType) {
+      case 0: return commonBaitInventory ?? BigInt(0)
+      case 1: return rareBaitInventory ?? BigInt(0)
+      case 2: return epicBaitInventory ?? BigInt(0)
+      case 3: return legendaryBaitInventory ?? BigInt(0)
+      default: return BigInt(0)
+    }
+  }
+
   // Parse amounts
   const stakeAmountBigInt = stakeAmount ? parseUnits(stakeAmount, 18) : BigInt(0)
   const needsApproval = allowance !== undefined && stakeAmountBigInt > allowance
-  const hasBait = (baitInventory ?? BigInt(0)) > BigInt(0)
+  const selectedBaitInventory = getBaitInventory(selectedBait)
+  const hasBait = selectedBaitInventory > BigInt(0)
 
   // Initialize phase based on stakeInfo
   useEffect(() => {
@@ -137,15 +155,23 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
 
   // Handle unstake result
   useEffect(() => {
-    if (isUnstaked) {
-      const strikeTime = Number(strikeTimeLeft ?? BigInt(0))
-      if (strikeTime > 0) {
+    if (!isUnstaked) return
+
+    // Wait a bit for blockchain state to update, then check result
+    const timer = setTimeout(async () => {
+      const updatedStakeInfo = await refetchStakeInfo()
+      
+      // If stake still exists and in Strike state = SUCCESS
+      // If stake deleted (state = 0 / Idle) = FAILED
+      if (updatedStakeInfo.data && updatedStakeInfo.data[2] === 3) {
+        // State = 3 (Strike) means fish caught!
         setPhase("success")
         toast({
           title: "🎉 Fish Caught!",
           description: "Wait for NFT generation...",
         })
       } else {
+        // State = 0 (Idle) or deleted means fish escaped
         setPhase("failed")
         toast({
           title: "😢 Fish Escaped",
@@ -153,10 +179,11 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
           variant: "destructive",
         })
       }
-      refetchStakeInfo()
-    }
+    }, 2000) // Wait 2 seconds for blockchain to confirm
+
+    return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isUnstaked, strikeTimeLeft])
+  }, [isUnstaked])
 
   // Countdown timer for casting/strike
   useEffect(() => {
@@ -237,12 +264,14 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
               <Label className="text-white">Select Bait</Label>
               <div className="grid grid-cols-4 gap-2">
                 {[0, 1, 2, 3].map((bait) => {
-                  const colors = BAIT_COLORS[bait as 0 | 1 | 2 | 3]
+                  const baitType = bait as 0 | 1 | 2 | 3
+                  const colors = BAIT_COLORS[baitType]
                   const isSelected = selectedBait === bait
+                  const inventory = getBaitInventory(baitType)
                   return (
                     <button
                       key={bait}
-                      onClick={() => setSelectedBait(bait as 0 | 1 | 2 | 3)}
+                      onClick={() => setSelectedBait(baitType)}
                       className={`p-3 rounded-xl border-2 transition-all ${
                         isSelected
                           ? `${colors.border} ${colors.bg} scale-105`
@@ -253,7 +282,7 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
                         {BAIT_NAMES[bait]}
                       </p>
                       <p className="text-xs text-white/50 mt-1">
-                        Owned: {baitInventory?.toString() || "0"}
+                        Owned: {inventory.toString()}
                       </p>
                     </button>
                   )
@@ -441,14 +470,14 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-500/20 mb-4">
               <Fish className="w-8 h-8 text-cyan-400" />
             </div>
-            <h2 className="text-2xl font-bold text-white">
+            <DialogTitle className="text-2xl font-bold text-white">
               {phase === "select" || phase === "approve" ? "Start Fishing" :
                phase === "casting" ? "Casting Line" :
                phase === "strike" ? "STRIKE!" :
                phase === "success" ? "Success!" :
                phase === "failed" ? "Failed" :
                "Fishing..."}
-            </h2>
+            </DialogTitle>
           </div>
 
           {/* Content */}
