@@ -5,7 +5,7 @@ import AppHeader from "@/components/app-header"
 import AquariumGrid from "@/components/aquarium-grid"
 import StatsSidebar from "@/components/stats-sidebar"
 import FishDetailsModal from "@/components/fish-details-modal"
-import CastLineModal from "@/components/cast-line-modal"
+import FishingModal from "@/components/fishing-modal"
 import AuroraBackground from "@/components/visual-effects/aurora-background"
 import { Fish, FishRarity } from "@/types/fish"
 
@@ -48,7 +48,7 @@ const MOCK_FISH: Fish[] = [
 
 export default function Home() {
   const [selectedFishId, setSelectedFishId] = useState<bigint | null>(null)
-  const [showCastModal, setShowCastModal] = useState(false)
+  const [showFishingModal, setShowFishingModal] = useState(false)
 
   const selectedFish = MOCK_FISH.find((f) => f.id === selectedFishId) || null
 
@@ -61,7 +61,7 @@ export default function Home() {
           <main className="flex-1">
             <AquariumGrid 
               onSelectFish={setSelectedFishId} 
-              onCastLine={() => setShowCastModal(true)} 
+              onCastLine={() => setShowFishingModal(true)} 
             />
           </main>
           <aside className="w-80">
@@ -75,9 +75,9 @@ export default function Home() {
           isOpen={!!selectedFishId}
           onClose={() => setSelectedFishId(null)}
         />
-        <CastLineModal 
-          isOpen={showCastModal} 
-          onClose={() => setShowCastModal(false)} 
+        <FishingModal 
+          isOpen={showFishingModal} 
+          onClose={() => setShowFishingModal(false)} 
         />
       </div>
     </div>

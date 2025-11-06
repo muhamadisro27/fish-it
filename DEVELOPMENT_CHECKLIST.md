@@ -5,8 +5,8 @@
 | Fase | Progress | Status |
 |------|----------|--------|
 | Fase 1: Foundation & Wallet | 100% | ✅ COMPLETED |
-| Fase 2: Core Gameplay | 0% | 🔜 Ready to Start |
-| Fase 3: Backend AI NFT | 0% | ⏳ Not Started |
+| Fase 2: Core Gameplay | 100% | ✅ COMPLETED |
+| Fase 3: Backend AI NFT | 0% | 🔜 Ready to Start |
 | Fase 4: UI/UX Enhancement | 0% | ⏳ Not Started |
 | Fase 5: Advanced Features | 0% | ⏳ Not Started |
 | Fase 6: Production Ready | 0% | ⏳ Not Started |
@@ -51,50 +51,50 @@
 ## 🎮 FASE 2: Core Gameplay Integration
 
 ### Faucet Integration
-- [ ] Integrate `claim()` function
-- [ ] UI dengan countdown timer
-- [ ] Toast notifications
-- [ ] Auto-refresh balance
+- [x] Integrate `claim()` function
+- [x] UI dengan countdown timer
+- [x] Toast notifications
+- [x] Auto-refresh balance
 
 ### Bait Shop Integration
-- [ ] Integrate `buyBait()` function
-- [ ] UI untuk purchase dengan approve
-- [ ] Update inventory setelah purchase
-- [ ] Loading states
+- [x] Integrate `buyBait()` function
+- [x] UI untuk purchase dengan approve
+- [x] Update inventory setelah purchase
+- [x] Loading states
 
 ### Fishing Flow
-- [ ] **Start Fishing**
-  - [ ] Modal untuk select bait & amount
-  - [ ] Validate minimum stake
-  - [ ] Approve token
-  - [ ] Transaction handling
+- [x] **Start Fishing**
+  - [x] Modal untuk select bait & amount
+  - [x] Validate minimum stake
+  - [x] Approve token
+  - [x] Transaction handling
 
-- [ ] **Casting Phase**
-  - [ ] Auto-trigger setelah start
-  - [ ] 60s countdown timer
-  - [ ] Visual progress indicator
+- [x] **Casting Phase**
+  - [x] Auto-trigger setelah start
+  - [x] 60s countdown timer
+  - [x] Visual progress indicator
 
-- [ ] **Strike Phase**
-  - [ ] Auto-trigger setelah casting
-  - [ ] 30s countdown timer
-  - [ ] Big "STRIKE NOW!" button
+- [x] **Strike Phase**
+  - [x] Auto-trigger setelah casting
+  - [x] 30s countdown timer
+  - [x] Big "STRIKE NOW!" button
 
-- [ ] **Unstake**
-  - [ ] Handle success (FishCaught)
-  - [ ] Handle timeout (FishEscaped)
-  - [ ] Show messages
+- [x] **Unstake**
+  - [x] Handle success (FishCaught)
+  - [x] Handle timeout (FishEscaped)
+  - [x] Show messages
 
 ### NFT Claiming
-- [ ] Integrate `claimReward()` function
-- [ ] UI untuk claim dengan NFT preview
-- [ ] Update NFT collection
+- [x] Integrate `claimReward()` function
+- [x] UI untuk claim dengan NFT preview
+- [x] Update NFT collection
 
 ### State Management
-- [ ] Fishing state machine
-- [ ] Polling mechanism
-- [ ] Handle page refresh
+- [x] Fishing state machine
+- [x] Polling mechanism (refetchInterval)
+- [x] Handle page refresh
 
-**Status**: ⏳ Not Started | **ETA**: 5-7 hari
+**Status**: ✅ COMPLETED | **Completed**: 2025-01-27
 
 ---
 
