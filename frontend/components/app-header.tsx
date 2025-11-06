@@ -3,7 +3,6 @@
 import { Fish } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAccount, useConnect, useDisconnect } from "wagmi"
-import { useEffect } from "react"
 
 interface AppHeaderProps {
     schedulerRunning?: boolean
@@ -13,19 +12,6 @@ export default function AppHeader({ schedulerRunning = false }: AppHeaderProps) 
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()
   const { disconnect } = useDisconnect()
-
-  // Auto-connect if previously connected
-  useEffect(() => {
-    if (!isConnected && typeof window !== 'undefined') {
-      const cachedConnector = localStorage.getItem('wagmi.recentConnectorId')
-      if (cachedConnector) {
-        const connector = connectors.find(c => c.id === cachedConnector)
-        if (connector) {
-          connect({ connector })
-        }
-      }
-    }
-  }, [isConnected, connectors, connect])
 
   const handleConnect = () => {
     if (connectors[0]) {
