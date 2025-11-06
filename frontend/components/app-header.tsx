@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { useAccount, useConnect, useDisconnect } from "wagmi"
 
 interface AppHeaderProps {
-    schedulerRunning?: boolean
+  schedulerRunning?: boolean
 }
 
 export default function AppHeader({ schedulerRunning = false }: AppHeaderProps) {
