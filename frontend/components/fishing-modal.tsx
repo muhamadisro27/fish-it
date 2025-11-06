@@ -98,7 +98,8 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
         enterCasting()
       }, 1000)
     }
-  }, [isStarted, phase, enterCasting])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isStarted, phase])
 
   // Handle casting phase entry
   useEffect(() => {
@@ -110,14 +111,16 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
       })
       refetchStakeInfo()
     }
-  }, [isEnteredCasting, toast, refetchStakeInfo])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEnteredCasting])
 
   // Auto-enter strike when casting done
   useEffect(() => {
     if (phase === "casting" && castingTimeLeft === BigInt(0)) {
       enterStrike()
     }
-  }, [phase, castingTimeLeft, enterStrike])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase, castingTimeLeft])
 
   // Handle strike phase entry
   useEffect(() => {
@@ -129,7 +132,8 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
       })
       refetchStakeInfo()
     }
-  }, [isEnteredStrike, toast, refetchStakeInfo])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEnteredStrike])
 
   // Handle unstake result
   useEffect(() => {
@@ -151,7 +155,8 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
       }
       refetchStakeInfo()
     }
-  }, [isUnstaked, strikeTimeLeft, toast, refetchStakeInfo])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isUnstaked, strikeTimeLeft])
 
   // Countdown timer for casting/strike
   useEffect(() => {
@@ -180,7 +185,8 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
       })
       setPhase("select")
     }
-  }, [isApproved, refetchAllowance, toast])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isApproved])
 
   // Handle start fishing
   const handleStartFishing = () => {

@@ -91,7 +91,8 @@ export default function StatsSidebar({ selectedFishId }: StatsSidebarProps) {
     const interval = setInterval(updateCountdown, 1000)
 
     return () => clearInterval(interval)
-  }, [nextClaimTime, canClaim, refetchCanClaim])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nextClaimTime, canClaim])
 
   // Handle claim success
   useEffect(() => {
@@ -103,7 +104,8 @@ export default function StatsSidebar({ selectedFishId }: StatsSidebarProps) {
       refetchBalance()
       refetchCanClaim()
     }
-  }, [isConfirmed, refetchBalance, refetchCanClaim, toast])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConfirmed])
 
   // Handle claim
   const handleClaim = () => {
@@ -144,7 +146,8 @@ export default function StatsSidebar({ selectedFishId }: StatsSidebarProps) {
       })
       refetchStakeInfo()
     }
-  }, [isNFTClaimed, toast, refetchStakeInfo])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNFTClaimed])
 
   return (
     <div className="space-y-4 sticky top-24">
