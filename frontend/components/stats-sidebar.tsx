@@ -13,6 +13,7 @@ import BuyBaitModal from "./buy-bait-modal"
 
 interface StatsSidebarProps {
   selectedFishId: bigint | null
+  onNFTClaimed?: () => void
 }
 
 // Hardcoded stats untuk demo (akan diganti dengan real data nanti)
@@ -24,7 +25,7 @@ const MOCK_STATS = {
   legendaryFish: 0,
 }
 
-export default function StatsSidebar({ selectedFishId }: StatsSidebarProps) {
+export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSidebarProps) {
   const { address, isConnected } = useAccount()
   const { toast } = useToast()
   const [countdown, setCountdown] = useState<string>("")
@@ -145,6 +146,10 @@ export default function StatsSidebar({ selectedFishId }: StatsSidebarProps) {
         description: "Check your collection!",
       })
       refetchStakeInfo()
+      // Trigger parent refetch to update aquarium
+      if (onNFTClaimed) {
+        setTimeout(() => onNFTClaimed(), 1000)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNFTClaimed])

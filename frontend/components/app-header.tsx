@@ -25,8 +25,8 @@ export default function AppHeader({ schedulerRunning = false }: AppHeaderProps) 
 
   return (
     <header className="sticky top-0 z-50 animate-slide-in-down">
-      <div className="relative border-b border-white/10 backdrop-blur-xl">
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0b1f43]/90 via-[#0a2c66]/85 to-[#041432]/90" />
+      <div className="relative border-b border-white/10 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,100,255,0.15)]">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0b1f43]/95 via-[#0a2c66]/90 to-[#041432]/95" />
         <div className="relative z-10 max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#21d4fd] via-[#0ab2ff] to-[#3d5fff] shadow-[0_14px_40px_-18px_rgba(12,95,255,0.9)] flex items-center justify-center">
