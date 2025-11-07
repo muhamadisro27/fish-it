@@ -6,7 +6,8 @@ import AquariumGrid from "@/components/aquarium-grid"
 import StatsSidebar from "@/components/stats-sidebar"
 import FishDetailsModal from "@/components/fish-details-modal"
 import FishingModal from "@/components/fishing-modal"
-import AuroraBackground from "@/components/visual-effects/aurora-background"
+import OceanBackground from "@/components/visual-effects/ocean-background"
+import FishParticles from "@/components/visual-effects/fish-particles"
 import { Fish, FishRarity } from "@/types/fish"
 
 // Hardcoded data untuk demo
@@ -57,7 +58,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      <AuroraBackground />
+      <OceanBackground />
+      <FishParticles />
       <div className="relative z-10">
         <AppHeader schedulerRunning={false} />
         <div className="flex gap-6 p-6 max-w-7xl mx-auto">
