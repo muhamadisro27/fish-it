@@ -1,5 +1,5 @@
 import dotenv from "dotenv"
-import express from "express"
+import express, { Request, Response } from "express"
 import cors from "cors"
 import { BlockchainService } from "./services/blockchain"
 import { NFTGenerator } from "./services/nftGenerator"
@@ -12,38 +12,40 @@ const app = express()
 const PORT = process.env.PORT || 3001
 
 // Middleware
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'HEAD', 'OPTIONS'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control']
-}))
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "HEAD", "OPTIONS"],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
+  })
+)
 app.use(express.json())
 
 // Health check
-app.get("/health", (req, res) => {
-  res.setHeader('Cache-Control', 'no-cache')
+app.get("/health", (req: Request, res: Response) => {
+  res.setHeader("Cache-Control", "no-cache")
   res.json({ status: "ok", service: "FishIt NFT Generator" })
 })
 
 // HEAD method for health check (for faster checks)
-app.head("/health", (req, res) => {
-  res.setHeader('Cache-Control', 'no-cache')
+app.head("/health", (req: Request, res: Response) => {
+  res.setHeader("Cache-Control", "no-cache")
   res.status(200).end()
 })
 
 // SSE endpoint for NFT progress
-app.get("/events/:userAddress", (req, res) => {
+app.get("/events/:userAddress", (req: Request, res: Response) => {
   const userAddress = req.params.userAddress.toLowerCase()
 
   console.log(`📡 SSE client connected: ${userAddress}`)
 
   // Set SSE headers
-  res.setHeader('Content-Type', 'text/event-stream')
-  res.setHeader('Cache-Control', 'no-cache')
-  res.setHeader('Connection', 'keep-alive')
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('X-Accel-Buffering', 'no') // Disable nginx buffering
+  res.setHeader("Content-Type", "text/event-stream")
+  res.setHeader("Cache-Control", "no-cache")
+  res.setHeader("Connection", "keep-alive")
+  res.setHeader("Access-Control-Allow-Origin", "*")
+  res.setHeader("X-Accel-Buffering", "no") // Disable nginx buffering
 
   sseManager.addClient(userAddress, res)
 
