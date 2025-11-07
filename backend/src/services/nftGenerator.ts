@@ -1,7 +1,7 @@
 import { FishCaughtEvent, NFTMetadata } from "../types"
 import { calculateRarity, getBaitName } from "../utils/rarity"
-import { generateFishImage, generateNFTMetadata } from "./gemini"
-import { uploadMetadataToPinata, uploadImageToPinata } from "./pinata"
+import { generateFishImageWithModel, generateNFTMetadata } from "./gemini"
+import { uploadMetadataToPinata } from "./pinata"
 import { BlockchainService } from "./blockchain"
 import { sseManager } from "./eventEmitter"
 import { ethers } from "ethers"
@@ -42,31 +42,22 @@ export class NFTGenerator {
 
       console.log("metadata", metadata)
 
-      // // Stage 2: Generate and upload image
-      // console.log("🖼️  Generating fish image...")
-      // sseManager.sendProgress({
-      //   user: event.user,
-      //   stage: "uploading_image",
-      //   message: "Creating unique fish artwork...",
-      //   data: { name: metadata.name, species: metadata.species },
-      // })
+      // Stage 2: Generate and upload image
+      console.log("🖼️  Generating fish image...")
+      sseManager.sendProgress({
+        user: event.user,
+        stage: "uploading_image",
+        message: "Creating unique fish artwork...",
+        data: { name: metadata.name, species: metadata.species },
+      })
 
-      // const imageBuffer = await generateFishImage(
-      //   metadata.name,
-      //   metadata.species,
-      //   rarity
-      // )
+      const imageuRL = await generateFishImageWithModel(
+        metadata.name,
+        metadata.species,
+        rarity
+      )
 
-      // // console.log("📤 Uploading image to IPFS...")
-      // const imageCid = await uploadImageToPinata(
-      //   imageBuffer,
-      //   `${metadata.name.replace(/\s+/g, "_")}.png`
-      // )
-      // console.log(
-      //   `✅ Image uploaded: https://gateway.pinata.cloud/ipfs/${imageCid}`
-      // )
-
-      const imageCid = `bafybeifwxamsy7m452o3s4hcomrqcfh4trhc2c52xrghdaooyoeist5ntm`
+      // const imageCid = `bafybeifwxamsy7m452o3s4hcomrqcfh4trhc2c52xrghdaooyoeist5ntm`
 
       // Stage 3: Upload metadata with image URL
       console.log("📤 Uploading metadata to IPFS...")
@@ -74,13 +65,13 @@ export class NFTGenerator {
         user: event.user,
         stage: "uploading_metadata",
         message: "Uploading NFT data to IPFS...",
-        data: { imageCid },
+        data: { imageuRL },
       })
 
       const fullMetadata: NFTMetadata = {
         ...metadata,
-        image: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
-        external_url: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+        image: imageuRL,
+        external_url: imageuRL,
       }
 
       const metadataCid = await uploadMetadataToPinata(fullMetadata)
@@ -107,7 +98,7 @@ export class NFTGenerator {
         message: "NFT ready to mint!",
         data: {
           metadata: fullMetadata,
-          imageUrl: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+          imageUrl: imageuRL,
           metadataUrl: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
           ipfsUri: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
         },
