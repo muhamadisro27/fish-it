@@ -88,14 +88,21 @@ export default function FishCard({ fish }: { fish: any }) {
           }`}
         />
 
-        {fish.metadata?.image === "ipfs://placeholder" ? (
-          <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
-            {RARITY_EMOJIS[rarity]}
-          </div>
-        ) : (
-          <img src={fish.metadata?.image ?? ""} alt="" />
-        )}
+        {(() => {
+          const image = fish.metadata?.image
+          const isPlaceholder = image === "ipfs://placeholder"
 
+          if (!image || isPlaceholder) {
+            return (
+              <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
+                {RARITY_EMOJIS[rarity]}
+              </div>
+            )
+          }
+
+          return <img src={image} alt={fish.metadata?.name ?? "Fish"} />
+        })()}
+        
         {rarity === FishRarity.COMMON && (
           <>
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-2 bg-gray-600/20 dark:bg-gray-400/20 rounded-full" />
