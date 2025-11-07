@@ -9,7 +9,7 @@ export const CONTRACTS = {
 
 // Verify all addresses are set
 Object.entries(CONTRACTS).forEach(([name, address]) => {
-  if (!address || address === 'undefined') {
+  if (!address || address === undefined) {
     console.error(`Missing contract address for ${name}`)
   }
 })

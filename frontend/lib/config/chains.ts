@@ -3,7 +3,7 @@ import { Chain } from 'viem'
 export const liskSepolia = {
   id: 4202,
   name: 'Lisk Sepolia',
-  network: 'lisk-sepolia',
+  // network: 'lisk-sepolia',
   nativeCurrency: {
     decimals: 18,
     name: 'Sepolia Ether',

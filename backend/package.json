@@ -21,14 +21,15 @@
     "@google/generative-ai": "^0.21.0",
     "@pinata/sdk": "^2.1.0",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.5",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.4",
+    "express": "^5.1.0",
     "viem": "^2.21.54",
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@types/express": "^5.0.5",
     "@types/node": "^22.10.5",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
