@@ -12,12 +12,24 @@ const app = express()
 const PORT = process.env.PORT || 3001
 
 // Middleware
-app.use(cors())
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'HEAD', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control']
+}))
 app.use(express.json())
 
 // Health check
 app.get("/health", (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache')
   res.json({ status: "ok", service: "FishIt NFT Generator" })
+})
+
+// HEAD method for health check (for faster checks)
+app.head("/health", (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache')
+  res.status(200).end()
 })
 
 // SSE endpoint for NFT progress
@@ -26,11 +38,22 @@ app.get("/events/:userAddress", (req, res) => {
 
   console.log(`📡 SSE client connected: ${userAddress}`)
 
+  // Set SSE headers
+  res.setHeader('Content-Type', 'text/event-stream')
+  res.setHeader('Cache-Control', 'no-cache')
+  res.setHeader('Connection', 'keep-alive')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('X-Accel-Buffering', 'no') // Disable nginx buffering
+
   sseManager.addClient(userAddress, res)
 
   // Keep connection alive
   const keepAlive = setInterval(() => {
-    res.write(": keep-alive\n\n")
+    try {
+      res.write(": keep-alive\n\n")
+    } catch (error) {
+      clearInterval(keepAlive)
+    }
   }, 30000)
 
   req.on("close", () => {

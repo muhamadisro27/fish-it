@@ -16,19 +16,18 @@ export class SSEManager {
     }
     this.clients.get(user)!.push(res);
 
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*',
-    });
+    // Headers already set in index.ts, no need to writeHead again
 
     // Send initial connection message
-    this.sendToClient(res, {
-      user,
-      stage: 'generating',
-      message: 'Connected to NFT generator'
-    });
+    try {
+      this.sendToClient(res, {
+        user,
+        stage: 'generating' as const,
+        message: 'Connected to NFT generator'
+      });
+    } catch (error) {
+      console.error('Error sending initial message:', error);
+    }
 
     // Cleanup on disconnect
     res.on('close', () => {
@@ -57,7 +56,13 @@ export class SSEManager {
   }
 
   private sendToClient(res: Response, data: NFTProgress) {
-    res.write(`data: ${JSON.stringify(data)}\n\n`);
+    try {
+      if (!res.writableEnded) {
+        res.write(`data: ${JSON.stringify(data)}\n\n`);
+      }
+    } catch (error) {
+      console.error('Error writing to SSE client:', error);
+    }
   }
 }
 
