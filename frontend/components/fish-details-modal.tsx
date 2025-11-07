@@ -1,10 +1,20 @@
 "use client"
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Waves, Sparkles, Weight, Coins, Anchor, Clock } from "lucide-react"
-import { Fish, FishRarity, RARITY_NAMES, FISH_REWARD_MULTIPLIERS } from "@/types/fish"
+import {
+  Fish,
+  FishRarity,
+  RARITY_NAMES,
+  FISH_REWARD_MULTIPLIERS,
+} from "@/types/fish"
 
 const RARITY_EMOJIS = {
   [FishRarity.COMMON]: "🐟",
@@ -14,10 +24,14 @@ const RARITY_EMOJIS = {
 }
 
 const RARITY_BACKGROUNDS = {
-  [FishRarity.COMMON]: "from-gray-50 to-slate-50 dark:from-gray-950 dark:to-slate-950",
-  [FishRarity.RARE]: "from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950",
-  [FishRarity.EPIC]: "from-purple-50 to-violet-50 dark:from-purple-950 dark:to-violet-950",
-  [FishRarity.LEGENDARY]: "from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950",
+  [FishRarity.COMMON]:
+    "from-gray-50 to-slate-50 dark:from-gray-950 dark:to-slate-950",
+  [FishRarity.RARE]:
+    "from-blue-50 to-cyan-50 dark:from-blue-950 dark:to-cyan-950",
+  [FishRarity.EPIC]:
+    "from-purple-50 to-violet-50 dark:from-purple-950 dark:to-violet-950",
+  [FishRarity.LEGENDARY]:
+    "from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950",
 }
 
 interface FishDetailsModalProps {
@@ -37,7 +51,11 @@ function formatTimeAgo(timestamp: number): string {
   return `${days}d ago`
 }
 
-export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsModalProps) {
+export default function FishDetailsModal({
+  fish,
+  isOpen,
+  onClose,
+}: FishDetailsModalProps) {
   const loading = false
 
   if (!fish || fish.rarity === undefined) return null
@@ -54,9 +72,13 @@ export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsM
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_-10%,rgba(47,147,255,0.3),transparent_60%)]" />
           <DialogHeader className="relative z-10">
             <DialogTitle className="flex items-center gap-3 text-white">
-              <span className="text-3xl drop-shadow">{RARITY_EMOJIS[rarity]}</span>
+              <span className="text-3xl drop-shadow">
+                {RARITY_EMOJIS[rarity]}
+              </span>
               <div className="flex-1">
-                <div className="text-lg font-semibold">{fish.species} #{fish.id.toString()}</div>
+                <div className="text-lg font-semibold">
+                  {fish.species} #{fish.id.toString()}
+                </div>
               </div>
             </DialogTitle>
           </DialogHeader>
@@ -68,7 +90,13 @@ export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsM
               className={`relative h-40 rounded-2xl flex items-center justify-center overflow-hidden bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]}`}
             >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(47,147,255,0.25),transparent_65%)]" />
-              <div className="text-8xl drop-shadow-[0_12px_30px_rgba(0,0,0,0.45)]">{RARITY_EMOJIS[rarity]}</div>
+              {fish.metadata?.image === "ipfs://placeholder" ? (
+                <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
+                  {RARITY_EMOJIS[rarity]}
+                </div>
+              ) : (
+                <img className="object-contain" src={fish.metadata?.image ?? ""} alt="" />
+              )}
             </div>
 
             <Card className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0b2347]/80 p-5 space-y-3">
@@ -76,32 +104,42 @@ export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsM
               <div className="relative z-10 space-y-3 text-sm text-cyan-100/85">
                 <div className="flex items-center justify-between">
                   <span className="text-cyan-100/70">Species</span>
-                  <span className="font-semibold text-white">{fish.species}</span>
+                  <span className="font-semibold text-white">
+                    {fish.species}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-cyan-100/70">Rarity</span>
-                  <span className="font-semibold text-white capitalize">{rarityKey}</span>
+                  <span className="font-semibold text-white capitalize">
+                    {rarityKey}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-cyan-100/70">
                     <Weight className="w-4 h-4 text-[#29c0ff]" />
                     Weight
                   </span>
-                  <span className="font-semibold text-white">{fish.weight} kg</span>
+                  <span className="font-semibold text-white">
+                    {fish.weight} kg
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-cyan-100/70">
                     <Anchor className="w-4 h-4 text-[#6ea8ff]" />
                     Staked Amount
                   </span>
-                  <span className="font-semibold text-white">{fish.stakedAmount} FISH</span>
+                  <span className="font-semibold text-white">
+                    {fish.stakedAmount} FISH
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-cyan-100/70">
                     <Waves className="w-4 h-4 text-[#38c6ff]" />
                     Bait Used
                   </span>
-                  <span className="font-semibold text-white">{fish.baitType}</span>
+                  <span className="font-semibold text-white">
+                    {fish.baitType}
+                  </span>
                 </div>
               </div>
             </Card>
@@ -119,7 +157,9 @@ export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsM
                 <Coins className="w-4 h-4 text-[#61f6ca]" />
                 <span className="font-semibold">Estimated Reward</span>
               </div>
-              <p className="text-2xl font-bold text-[#61f6ca]">{estimatedReward} FISH</p>
+              <p className="text-2xl font-bold text-[#61f6ca]">
+                {estimatedReward} FISH
+              </p>
               <p className="text-xs text-cyan-100/70">
                 {rewardMultiplier}x multiplier for {rarityKey} rarity
               </p>
@@ -127,9 +167,11 @@ export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsM
 
             <Card className="rounded-2xl border border-[#29c0ff]/30 bg-[#0a2347]/80 p-4">
               <p className="text-xs text-cyan-100/80">
-                🎣 <strong>Congratulations!</strong> You caught a {rarityKey} {fish.species}!
+                🎣 <strong>Congratulations!</strong> You caught a {rarityKey}{" "}
+                {fish.species}!
                 <br />
-                💎 <strong>Rarity bonus</strong>: {rewardMultiplier}x reward multiplier
+                💎 <strong>Rarity bonus</strong>: {rewardMultiplier}x reward
+                multiplier
                 <br />
                 🪙 <strong>NFT</strong>: This fish is a unique ERC-721 token
               </p>
@@ -168,5 +210,3 @@ export default function FishDetailsModal({ fish, isOpen, onClose }: FishDetailsM
     </Dialog>
   )
 }
-
-

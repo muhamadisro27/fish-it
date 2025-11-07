@@ -56,6 +56,7 @@ export function useNFTCollection() {
       }
 
       const metadata: NFTMetadata = await response.json()
+
       return metadata
     } catch (error) {
       console.error('Error fetching metadata:', error)
