@@ -6,6 +6,15 @@ dotenv.config()
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
 
+interface ImageGenerationResponse {
+  success: boolean
+  imageUrl: string
+  metadata: {
+    model: string
+    generatedAt: number
+  }
+}
+
 export async function generateFishImage(
   fishName: string,
   species: string,
@@ -31,6 +40,79 @@ Make it look majestic and unique for an NFT collectible.`
   }
 
   return Buffer.from(imagePart.inlineData.data, "base64")
+}
+
+export async function generateFishImageWithModel(
+  fishName: string,
+  species: string,
+  rarity: string,
+  model: string = "google/gemini-2.5-flash-image"
+): Promise<string> {
+  const openRouterApiKey = process.env.OPENROUTER_API_KEY
+
+  if (!openRouterApiKey) {
+    throw new Error("OPENROUTER_API_KEY is not set in environment variables")
+  }
+
+  try {
+    const prompt = `Generate a high-quality, detailed illustration of a ${species} fish named "${fishName}".
+Style: Fantasy game art, vibrant colors, professional NFT quality
+Rarity: ${rarity}
+Background: Ocean/underwater themed with ${rarity} visual effects
+Make it look majestic and unique for an NFT collectible.`
+
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${openRouterApiKey}`,
+          "Content-Type": "application/json",
+          "HTTP-Referer": process.env.APP_URL || "http://localhost:3000",
+          "X-Title": "Fish NFT Generator",
+        },
+        body: JSON.stringify({
+          model: model,
+          messages: [
+            {
+              role: "user",
+              content: prompt,
+            },
+          ],
+          temperature: 0.8,
+          max_tokens: 2048,
+        }),
+      }
+    )
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`OpenRouter API error: ${response.status} - ${errorText}`)
+    }
+
+    const data = await response.json()
+
+    // let imageUrl = ""
+    // if (typeof content === "string" && content.startsWith("http")) {
+    //   imageUrl = content
+    // } else if (typeof content === "string") {
+    //   const urlMatch = content.match(
+    //     /(https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp))/i
+    //   )
+    //   imageUrl = urlMatch ? urlMatch[1] : ""
+    // }
+
+    const imageUrl = data.choices?.[0]?.message.images[0].image_url.url
+
+    if (!imageUrl) {
+      throw new Error("No image URL found in response")
+    }
+
+    return imageUrl
+  } catch (error) {
+    console.error("Error generating fish image:", error)
+    throw error
+  }
 }
 
 export async function generateNFTMetadata(
