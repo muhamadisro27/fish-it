@@ -1,54 +1,127 @@
-import { FishCaughtEvent, NFTMetadata } from '../types';
-import { calculateRarity, getBaitName } from '../utils/rarity';
-import { generateNFTMetadata } from './gemini';
-import { uploadMetadataToPinata } from './pinata';
-import { BlockchainService } from './blockchain';
-import { ethers } from 'ethers';
+import { FishCaughtEvent, NFTMetadata } from "../types"
+import { calculateRarity, getBaitName } from "../utils/rarity"
+import { generateFishImage, generateNFTMetadata } from "./gemini"
+import { uploadMetadataToPinata, uploadImageToPinata } from "./pinata"
+import { BlockchainService } from "./blockchain"
+import { sseManager } from "./eventEmitter"
+import { ethers } from "ethers"
 
 export class NFTGenerator {
-  private blockchain: BlockchainService;
-  private processing = new Set<string>();
+  private blockchain: BlockchainService
+  private processing = new Set<string>()
 
   constructor(blockchain: BlockchainService) {
-    this.blockchain = blockchain;
+    this.blockchain = blockchain
   }
 
   async processEvent(event: FishCaughtEvent): Promise<void> {
-    const key = `${event.user}-${event.timestamp}`;
-    
+    const key = `${event.user}-${event.timestamp}`
+
     if (this.processing.has(key)) {
-      console.log('⚠️  Already processing this event');
-      return;
+      console.log("⚠️  Already processing this event")
+      return
     }
 
-    this.processing.add(key);
+    this.processing.add(key)
 
     try {
-      const rarity = calculateRarity(event.baitType, event.amount);
-      const baitName = getBaitName(event.baitType);
-      const stakeAmount = ethers.formatEther(event.amount);
+      const rarity = calculateRarity(event.baitType, event.amount)
+      const baitName = getBaitName(event.baitType)
+      const stakeAmount = ethers.formatEther(event.amount)
 
-      console.log(`🎨 Generating ${rarity} fish NFT...`);
+      // Stage 1: Generate metadata
+      console.log(`🎨 Generating ${rarity} fish NFT...`)
+      sseManager.sendProgress({
+        user: event.user,
+        stage: "generating",
+        message: "Generating fish metadata and image...",
+        data: { rarity, baitName, stakeAmount },
+      })
 
-      const metadata = await generateNFTMetadata(rarity, baitName, stakeAmount);
+      const metadata = await generateNFTMetadata(rarity, baitName, stakeAmount)
+
+      console.log("metadata", metadata)
+
+      // // Stage 2: Generate and upload image
+      // console.log("🖼️  Generating fish image...")
+      // sseManager.sendProgress({
+      //   user: event.user,
+      //   stage: "uploading_image",
+      //   message: "Creating unique fish artwork...",
+      //   data: { name: metadata.name, species: metadata.species },
+      // })
+
+      // const imageBuffer = await generateFishImage(
+      //   metadata.name,
+      //   metadata.species,
+      //   rarity
+      // )
+
+      // // console.log("📤 Uploading image to IPFS...")
+      // const imageCid = await uploadImageToPinata(
+      //   imageBuffer,
+      //   `${metadata.name.replace(/\s+/g, "_")}.png`
+      // )
+      // console.log(
+      //   `✅ Image uploaded: https://gateway.pinata.cloud/ipfs/${imageCid}`
+      // )
+
+      const imageCid = `bafybeifwxamsy7m452o3s4hcomrqcfh4trhc2c52xrghdaooyoeist5ntm`
+
+      // Stage 3: Upload metadata with image URL
+      console.log("📤 Uploading metadata to IPFS...")
+      sseManager.sendProgress({
+        user: event.user,
+        stage: "uploading_metadata",
+        message: "Uploading NFT data to IPFS...",
+        data: { imageCid },
+      })
 
       const fullMetadata: NFTMetadata = {
         ...metadata,
-        image: 'ipfs://placeholder',
-        external_url: `https://fishit.game/fish/${event.user}`,
-      };
+        image: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+        external_url: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+      }
 
-      console.log('📤 Uploading to IPFS...');
-      const cid = await uploadMetadataToPinata(fullMetadata);
-      console.log(`✅ Uploaded: ipfs://${cid}`);
+      const metadataCid = await uploadMetadataToPinata(fullMetadata)
+      console.log(
+        `✅ Metadata uploaded: https://gateway.pinata.cloud/ipfs/${metadataCid}`
+      )
 
-      await this.blockchain.prepareNFT(event.user, cid);
-      
-      console.log('🎉 NFT generation complete!\n');
-    } catch (error) {
-      console.error('❌ Error processing event:', error);
+      // Stage 4: Prepare NFT on blockchain
+      console.log("⛓️  Preparing NFT on blockchain...")
+      sseManager.sendProgress({
+        user: event.user,
+        stage: "minting",
+        message: "Preparing NFT for minting...",
+        data: { metadataCid },
+      })
+
+      await this.blockchain.prepareNFT(event.user, metadataCid)
+
+      // Stage 5: Complete
+      console.log("🎉 NFT generation complete!\n")
+      sseManager.sendProgress({
+        user: event.user,
+        stage: "complete",
+        message: "NFT ready to mint!",
+        data: {
+          metadata: fullMetadata,
+          imageUrl: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+          metadataUrl: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
+          ipfsUri: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
+        },
+      })
+    } catch (error: any) {
+      console.error("❌ Error processing event:", error)
+      sseManager.sendProgress({
+        user: event.user,
+        stage: "error",
+        message: error.message || "Failed to generate NFT",
+        data: { error: error.toString() },
+      })
     } finally {
-      this.processing.delete(key);
+      this.processing.delete(key)
     }
   }
 }
