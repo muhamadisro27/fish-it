@@ -13,14 +13,14 @@ const connectors = [
 ]
 
 // Add WalletConnect only if project ID is provided and valid
-if (projectId && projectId !== 'your_project_id_here' && projectId.length > 10) {
-  connectors.push(
-    walletConnect({
-      projectId,
-      showQrModal: true,
-    })
-  )
-}
+// if (projectId && projectId !== 'your_project_id_here' && projectId.length > 10) {
+//   connectors.push(
+//     walletConnect({
+//       projectId,
+//       showQrModal: true,
+//     })
+//   )
+// }
 
 export const config = createConfig({
   chains: [liskSepolia],
