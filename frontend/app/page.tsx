@@ -19,7 +19,7 @@ export default function Home() {
   const [showFishingModal, setShowFishingModal] = useState(false)
   
   const { fish, refetch: refetchFish } = useNFTCollection()
-  const { progress, isGenerating, clearProgress } = useNFTProgress()
+  const { progress, isGenerating, isConnected: backendConnected, clearProgress } = useNFTProgress()
   const { toast } = useToast()
 
   const selectedFish = fish.find((f) => f.id === selectedFishId) || null
@@ -51,7 +51,7 @@ export default function Home() {
       <FishParticles />
       
       {/* Sticky Navbar - z-50 */}
-      <AppHeader schedulerRunning={false} />
+      <AppHeader schedulerRunning={backendConnected} />
       
       {/* Main Content - z-10 */}
       <div className="relative z-10">

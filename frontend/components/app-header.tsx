@@ -40,8 +40,9 @@ export default function AppHeader({ schedulerRunning = false }: AppHeaderProps) 
 
           <div className="flex items-center gap-3">
             {schedulerRunning && (
-              <div className="flex items-center gap-2 rounded-full border border-cyan-400/40 bg-[#15335f]/70 px-3.5 py-2 text-xs font-medium text-cyan-100 shadow-[0_0_22px_rgba(0,183,255,0.35)]">
-                Auto-Sync Active
+              <div className="flex items-center gap-2 rounded-full border border-green-400/40 bg-[#15335f]/70 px-3.5 py-2 text-xs font-medium text-green-100 shadow-[0_0_22px_rgba(0,255,100,0.35)]">
+                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+                NFT Service Active
               </div>
             )}
             {isConnected ? (
