@@ -28,6 +28,7 @@ export function useNFTCollection() {
   const [parsedFish, setParsedFish] = useState<ParsedFish[]>([])
   const [isLoadingMetadata, setIsLoadingMetadata] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [refreshTrigger, setRefreshTrigger] = useState(0) // Trigger untuk force reload
 
   // Parse rarity from string
   const parseRarity = (rarityStr: string): FishRarity => {
@@ -155,11 +156,23 @@ export function useNFTCollection() {
     }
 
     loadMetadata()
-  }, [tokenIds, tokenURIs, address])
+  }, [tokenIds, tokenURIs, address, refreshTrigger])
 
-  // Refetch function
+  // Refetch function - Force reload semua data
   const refetch = async () => {
-    await Promise.all([refetchIds(), refetchURIs()])
+    try {
+      setIsLoadingMetadata(true)
+      setError(null)
+      
+      // Refetch tokenIds dan tokenURIs dari blockchain
+      await Promise.all([refetchIds(), refetchURIs()])
+      
+      // Force trigger useEffect untuk reload metadata
+      setRefreshTrigger(prev => prev + 1)
+    } catch (err: any) {
+      console.error('Error refetching collection:', err)
+      setError(err.message || 'Failed to refresh collection')
+    }
   }
 
   return {
