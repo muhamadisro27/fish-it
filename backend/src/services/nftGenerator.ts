@@ -46,16 +46,30 @@ export class NFTGenerator {
       const baitName = getBaitName(event.baitType)
       const stakeAmount = ethers.formatEther(event.amount)
 
+      // Calculate reward (1% dari smart contract)
+      const stakeAmountNum = parseFloat(stakeAmount)
+      const rewardAmountNum = stakeAmountNum * 0.01 // 1% reward
+      const rewardAmount = rewardAmountNum.toFixed(2)
+
+      // Get catch timestamp from blockchain event
+      const catchTimestamp = timestampNum
+
       // Stage 1: Generate metadata
       console.log(`🎨 Generating ${rarity} fish NFT...`)
       sseManager.sendProgress({
         user: event.user,
         stage: "generating",
         message: "Generating fish metadata and image...",
-        data: { rarity, baitName, stakeAmount },
+        data: { rarity, baitName, stakeAmount, rewardAmount, catchTimestamp },
       })
 
-      const metadata = await generateNFTMetadata(rarity, baitName, stakeAmount)
+      const metadata = await generateNFTMetadata(
+        rarity,
+        baitName,
+        stakeAmount,
+        catchTimestamp,
+        rewardAmount
+      )
 
       console.log("metadata", metadata)
 

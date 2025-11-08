@@ -62,8 +62,8 @@ export default function FishDetailsModal({
 
   const rarity = fish.rarity as FishRarity
   const rarityKey = RARITY_NAMES[rarity]
-  const rewardMultiplier = FISH_REWARD_MULTIPLIERS[rarity]
-  const estimatedReward = fish.stakedAmount * rewardMultiplier
+  // Reward dari smart contract (1% flat, bukan multiplier rarity)
+  const actualReward = fish.rewardAmount || (fish.stakedAmount * 0.01)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -162,13 +162,13 @@ export default function FishDetailsModal({
             <Card className="rounded-2xl border border-[#51f5c5]/35 bg-[#0a2e3d]/80 p-5 space-y-2 text-sm text-cyan-100/85">
               <div className="flex items-center gap-2 text-white">
                 <Coins className="w-4 h-4 text-[#61f6ca]" />
-                <span className="font-semibold">Estimated Reward</span>
+                <span className="font-semibold">Staking Reward</span>
               </div>
               <p className="text-2xl font-bold text-[#61f6ca]">
-                {estimatedReward} FISH
+                {actualReward.toFixed(2)} FSHT
               </p>
               <p className="text-xs text-cyan-100/70">
-                {rewardMultiplier}x multiplier for {rarityKey} rarity
+                1% reward from staked amount (smart contract)
               </p>
             </Card>
 
@@ -177,8 +177,7 @@ export default function FishDetailsModal({
                 🎣 <strong>Congratulations!</strong> You caught a {rarityKey}{" "}
                 {fish.species}!
                 <br />
-                💎 <strong>Rarity bonus</strong>: {rewardMultiplier}x reward
-                multiplier
+                💰 <strong>Staking Reward</strong>: 1% bonus ({actualReward.toFixed(2)} FSHT)
                 <br />
                 🪙 <strong>NFT</strong>: This fish is a unique ERC-721 token
               </p>

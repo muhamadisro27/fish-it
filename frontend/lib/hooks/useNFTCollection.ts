@@ -112,11 +112,15 @@ export function useNFTCollection() {
           const rarityStr = getAttributeValue('Rarity') || 'common'
           const rarity = parseRarity(rarityStr)
           const weightStr = getAttributeValue('Weight') || '0 kg'
-          const weight = parseFloat(weightStr.replace(' kg', '')) || 0
+          const weight = parseFloat(weightStr.replace(/[^0-9.]/g, '')) || 0
           const baitType = getAttributeValue('Bait Used') || 'Common'
           const stakedAmountStr = getAttributeValue('Staked Amount') || '0 FSHT'
-          const stakedAmount = parseFloat(stakedAmountStr.replace(' FSHT', '')) || 0
-          const catchTime = parseInt(getAttributeValue('Catch Time')) || Date.now()
+          const stakedAmount = parseFloat(stakedAmountStr.replace(/[^0-9.]/g, '')) || 0
+          const rewardAmountStr = getAttributeValue('Reward Amount') || '0 FSHT'
+          const rewardAmount = parseFloat(rewardAmountStr.replace(/[^0-9.]/g, '')) || 0
+          const catchTimeStr = getAttributeValue('Catch Time')
+          // Catch Time dari blockchain (unix timestamp in seconds), convert ke milliseconds
+          const catchTime = catchTimeStr ? parseInt(catchTimeStr) * 1000 : Date.now()
 
           return {
             id: tokenId,
@@ -128,6 +132,7 @@ export function useNFTCollection() {
             rarity,
             weight,
             stakedAmount,
+            rewardAmount,
             baitType,
             catchTime,
             isCaught: true,

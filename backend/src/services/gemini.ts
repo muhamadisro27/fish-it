@@ -147,8 +147,8 @@ Make it look majestic and unique for an NFT collectible.`
       choices?: {
         message?: {
           content?:
-            | string
-            | { type: string; text?: string; image_url?: string }[]
+          | string
+          | { type: string; text?: string; image_url?: string }[]
         }
       }[]
     }
@@ -185,7 +185,9 @@ Make it look majestic and unique for an NFT collectible.`
 export async function generateNFTMetadata(
   rarity: string,
   baitUsed: string,
-  stakeAmount: string
+  stakeAmount: string,
+  catchTimestamp: number,
+  rewardAmount: string
 ): Promise<Omit<NFTMetadata, "image" | "external_url">> {
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
 
@@ -193,6 +195,8 @@ export async function generateNFTMetadata(
 Rarity: ${rarity}
 Bait Used: ${baitUsed}
 Stake Amount: ${stakeAmount} FSHT
+Reward: ${rewardAmount} FSHT (1% of stake)
+Caught At: ${catchTimestamp}
 
 Return ONLY valid JSON with this structure:
 {
@@ -202,9 +206,11 @@ Return ONLY valid JSON with this structure:
   "attributes": [
     {"trait_type": "Rarity", "value": "${rarity}"},
     {"trait_type": "Species", "value": "species name"},
-    {"trait_type": "Weight", "value": weight in kg},
+    {"trait_type": "Weight", "value": "weight in kg"},
     {"trait_type": "Bait Used", "value": "${baitUsed}"},
-    {"trait_type": "Stake Amount", "value": "${stakeAmount}"}
+    {"trait_type": "Staked Amount", "value": "${stakeAmount} FSHT"},
+    {"trait_type": "Reward Amount", "value": "${rewardAmount} FSHT"},
+    {"trait_type": "Catch Time", "value": "${catchTimestamp}"}
   ]
 }`
 
