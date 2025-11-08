@@ -1,6 +1,6 @@
 import { FishCaughtEvent, NFTMetadata } from "../types"
 import { calculateRarity, getBaitName } from "../utils/rarity"
-import { generateFishImageWithModel, generateNFTMetadata } from "./gemini"
+import { generateFishImage, generateNFTMetadata } from "./gemini"
 import { uploadMetadataToPinata } from "./pinata"
 import { BlockchainService } from "./blockchain"
 import { sseManager } from "./eventEmitter"
@@ -51,7 +51,7 @@ export class NFTGenerator {
         data: { name: metadata.name, species: metadata.species },
       })
 
-      const imageuRL = await generateFishImageWithModel(
+      const imageuRL = await generateFishImage(
         metadata.name,
         metadata.species,
         rarity
