@@ -57,7 +57,7 @@ export class NFTGenerator {
         rarity
       )
 
-      // const imageCid = `bafybeifwxamsy7m452o3s4hcomrqcfh4trhc2c52xrghdaooyoeist5ntm`
+      const imageCid = `bafybeifwxamsy7m452o3s4hcomrqcfh4trhc2c52xrghdaooyoeist5ntm`
 
       // Stage 3: Upload metadata with image URL
       console.log("📤 Uploading metadata to IPFS...")
