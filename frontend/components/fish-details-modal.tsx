@@ -90,13 +90,20 @@ export default function FishDetailsModal({
               className={`relative h-40 rounded-2xl flex items-center justify-center overflow-hidden bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]}`}
             >
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(47,147,255,0.25),transparent_65%)]" />
-              {fish.metadata?.image === "ipfs://placeholder" ? (
-                <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
-                  {RARITY_EMOJIS[rarity]}
-                </div>
-              ) : (
-                <img className="object-contain" src={fish.metadata?.image ?? ""} alt="" />
-              )}
+              {(() => {
+                const image = fish.metadata?.image
+                const isPlaceholder = image === "ipfs://placeholder"
+
+                if (!image || isPlaceholder) {
+                  return (
+                    <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
+                      {RARITY_EMOJIS[rarity]}
+                    </div>
+                  )
+                }
+
+                return <img src={image} alt={fish.metadata?.name ?? "Fish"} />
+              })()}
             </div>
 
             <Card className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0b2347]/80 p-5 space-y-3">

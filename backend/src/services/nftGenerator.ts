@@ -1,6 +1,6 @@
 import { FishCaughtEvent, NFTMetadata } from "../types"
 import { calculateRarity, getBaitName } from "../utils/rarity"
-import { generateFishImageWithModel, generateNFTMetadata } from "./gemini"
+import { generateFishImage, generateNFTMetadata } from "./gemini"
 import { uploadMetadataToPinata } from "./pinata"
 import { BlockchainService } from "./blockchain"
 import { sseManager } from "./eventEmitter"
