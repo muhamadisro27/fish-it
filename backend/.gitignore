@@ -11,6 +11,9 @@ dist/
 logs/
 *.log
 
+# Event tracking (persistent data)
+processed_events.json
+
 # IDE
 .vscode/
 .idea/

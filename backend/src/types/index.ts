@@ -10,6 +10,10 @@ export interface FishCaughtEvent {
   amount: bigint;
   baitType: BaitType;
   timestamp: bigint;
+  event?: {
+    transactionHash?: string;
+    blockNumber?: number;
+  };
 }
 
 export interface NFTMetadata {

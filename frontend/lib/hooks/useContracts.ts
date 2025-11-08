@@ -20,7 +20,7 @@ export function useTokenBalance(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 5000, // Refetch every 5 seconds
+      refetchInterval: 30000, // Reduced to 30 seconds (only update on user actions)
     },
   })
 }
@@ -35,7 +35,7 @@ export function useTokenDecimals() {
 
 export function useTokenApprove() {
   const { data: hash, writeContract, ...rest } = useWriteContract()
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash })
 
@@ -59,7 +59,7 @@ export function useTokenAllowance(owner?: `0x${string}`, spender?: `0x${string}`
     args: owner && spender ? [owner, spender] : undefined,
     query: {
       enabled: !!(owner && spender),
-      refetchInterval: 5000,
+      refetchInterval: 30000, // Reduced to 30 seconds
     },
   })
 }
@@ -70,7 +70,7 @@ export function useTokenAllowance(owner?: `0x${string}`, spender?: `0x${string}`
 
 export function useFaucetClaim() {
   const { data: hash, writeContract, ...rest } = useWriteContract()
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash })
 
@@ -93,7 +93,7 @@ export function useFaucetCanClaim(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 10000,
+      refetchInterval: 60000, // Reduced to 60 seconds (faucet cooldown is 24h)
     },
   })
 }
@@ -106,7 +106,7 @@ export function useFaucetNextClaimTime(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 10000,
+      refetchInterval: 60000, // Reduced to 60 seconds
     },
   })
 }
@@ -123,7 +123,7 @@ export function useBaitInventory(address?: `0x${string}`, baitType?: 0 | 1 | 2 |
     args: address && baitType !== undefined ? [address, baitType] : undefined,
     query: {
       enabled: !!(address && baitType !== undefined),
-      refetchInterval: 5000,
+      refetchInterval: 15000, // Reduced to 15 seconds (only changes after buy/use)
     },
   })
 }
@@ -142,7 +142,7 @@ export function useBaitPrice(baitType?: 0 | 1 | 2 | 3) {
 
 export function useBuyBait() {
   const { data: hash, writeContract, ...rest } = useWriteContract()
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash })
 
@@ -170,14 +170,14 @@ export function useStakeInfo(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 3000, // Fast refresh for fishing state
+      refetchInterval: 10000, // Reduced to 10 seconds (timers handled separately)
     },
   })
 }
 
 export function useStartFishing() {
   const { data: hash, writeContract, ...rest } = useWriteContract()
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash })
 
@@ -195,7 +195,7 @@ export function useStartFishing() {
 
 export function useEnterCastingPhase() {
   const { data: hash, writeContract, ...rest } = useWriteContract()
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash })
 
@@ -212,7 +212,7 @@ export function useEnterCastingPhase() {
 
 export function useEnterStrikePhase() {
   const { data: hash, writeContract, ...rest } = useWriteContract()
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash })
 
@@ -229,7 +229,7 @@ export function useEnterStrikePhase() {
 
 export function useUnstake() {
   const { data: hash, writeContract, ...rest } = useWriteContract()
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash })
 
@@ -246,7 +246,7 @@ export function useUnstake() {
 
 export function useClaimReward() {
   const { data: hash, writeContract, ...rest } = useWriteContract()
-  
+
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({ hash })
 
@@ -269,7 +269,7 @@ export function useCastingTimeRemaining(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 1000, // Fast refresh for countdown
+      refetchInterval: 5000, // Reduced to 5 seconds (countdown can be simulated client-side)
     },
   })
 }
@@ -282,7 +282,7 @@ export function useStrikeTimeRemaining(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 1000, // Fast refresh for countdown
+      refetchInterval: 5000, // Reduced to 5 seconds (countdown can be simulated client-side)
     },
   })
 }
@@ -299,7 +299,7 @@ export function useNFTBalance(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 10000,
+      refetchInterval: 30000, // Reduced to 30 seconds (NFTs change infrequently)
     },
   })
 }
@@ -312,7 +312,7 @@ export function useTokensOfOwner(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 10000,
+      refetchInterval: 30000, // Reduced to 30 seconds
     },
   })
 }
@@ -325,7 +325,7 @@ export function useTokenURIsOfOwner(address?: `0x${string}`) {
     args: address ? [address] : undefined,
     query: {
       enabled: !!address,
-      refetchInterval: 10000,
+      refetchInterval: 30000, // Reduced to 30 seconds
     },
   })
 }

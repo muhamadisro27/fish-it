@@ -52,13 +52,13 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
 
   // Blockchain hooks
   const { data: stakeInfo, refetch: refetchStakeInfo } = useStakeInfo(address)
-  
+
   // Fetch inventory for all 4 bait types
   const { data: commonBaitInventory } = useBaitInventory(address, 0)
   const { data: rareBaitInventory } = useBaitInventory(address, 1)
   const { data: epicBaitInventory } = useBaitInventory(address, 2)
   const { data: legendaryBaitInventory } = useBaitInventory(address, 3)
-  
+
   const { data: allowance, refetch: refetchAllowance } = useTokenAllowance(address, CONTRACTS.FishItStaking)
   const { data: castingTimeLeft } = useCastingTimeRemaining(address)
   const { data: strikeTimeLeft } = useStrikeTimeRemaining(address)
@@ -92,7 +92,7 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     if (!isOpen || !stakeInfo) return
 
     const [, , state] = stakeInfo
-    
+
     // State: 0=Idle, 1=Chumming, 2=Casting, 3=Strike, 4=ReadyToClaim
     if (state === 1) {
       setPhase("chumming")
@@ -160,7 +160,7 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     // Wait a bit for blockchain state to update, then check result
     const timer = setTimeout(async () => {
       const updatedStakeInfo = await refetchStakeInfo()
-      
+
       // If stake still exists and in Strike state = SUCCESS
       // If stake deleted (state = 0 / Idle) = FAILED
       if (updatedStakeInfo.data && updatedStakeInfo.data[2] === 3) {
@@ -225,7 +225,7 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
       })
       return
     }
-    
+
     if (stakeAmountBigInt < parseUnits("1", 18)) {
       toast({
         title: "Minimum Stake",
@@ -272,11 +272,10 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
                     <button
                       key={bait}
                       onClick={() => setSelectedBait(baitType)}
-                      className={`p-3 rounded-xl border-2 transition-all ${
-                        isSelected
+                      className={`p-3 rounded-xl border-2 transition-all ${isSelected
                           ? `${colors.border} ${colors.bg} scale-105`
                           : "border-white/10 bg-white/5"
-                      }`}
+                        }`}
                     >
                       <p className={`text-xs font-semibold ${colors.text}`}>
                         {BAIT_NAMES[bait]}
@@ -472,11 +471,11 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
             </div>
             <DialogTitle className="text-2xl font-bold text-white">
               {phase === "select" || phase === "approve" ? "Start Fishing" :
-               phase === "casting" ? "Casting Line" :
-               phase === "strike" ? "STRIKE!" :
-               phase === "success" ? "Success!" :
-               phase === "failed" ? "Failed" :
-               "Fishing..."}
+                phase === "casting" ? "Casting Line" :
+                  phase === "strike" ? "STRIKE!" :
+                    phase === "success" ? "Success!" :
+                      phase === "failed" ? "Failed" :
+                        "Fishing..."}
             </DialogTitle>
           </div>
 

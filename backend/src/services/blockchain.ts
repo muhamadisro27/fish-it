@@ -44,8 +44,18 @@ export class BlockchainService {
               console.log(`User: ${user}`)
               console.log(`Amount: ${ethers.formatEther(amount)} FSHT`)
               console.log(`Bait: ${baitType}`)
+              console.log(`Tx: ${event.transactionHash}`)
 
-              await callback({ user, amount, baitType, timestamp, event })
+              await callback({ 
+                user, 
+                amount, 
+                baitType, 
+                timestamp,
+                event: {
+                  transactionHash: event.transactionHash,
+                  blockNumber: event.blockNumber,
+                }
+              })
             }
           }
 

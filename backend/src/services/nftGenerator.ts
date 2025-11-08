@@ -4,21 +4,38 @@ import { generateFishImageWithModel, generateNFTMetadata } from "./gemini"
 import { uploadMetadataToPinata } from "./pinata"
 import { BlockchainService } from "./blockchain"
 import { sseManager } from "./eventEmitter"
+import { EventTracker } from "./eventTracker"
 import { ethers } from "ethers"
 
 export class NFTGenerator {
   private blockchain: BlockchainService
   private processing = new Set<string>()
+  private eventTracker: EventTracker
 
   constructor(blockchain: BlockchainService) {
     this.blockchain = blockchain
+    this.eventTracker = new EventTracker()
+
+    // Cleanup old events every hour
+    setInterval(() => {
+      this.eventTracker.cleanup()
+    }, 60 * 60 * 1000)
   }
 
   async processEvent(event: FishCaughtEvent): Promise<void> {
     const key = `${event.user}-${event.timestamp}`
+    const txHash = event.event?.transactionHash
+    const timestampNum = Number(event.timestamp)
 
+    // Check if already processed (persistent check)
+    if (this.eventTracker.isProcessed(event.user, timestampNum, txHash)) {
+      console.log("⚠️  Event already processed (skipping)")
+      return
+    }
+
+    // Check if currently being processed (in-memory check)
     if (this.processing.has(key)) {
-      console.log("⚠️  Already processing this event")
+      console.log("⚠️  Event currently being processed (skipping)")
       return
     }
 
@@ -103,6 +120,22 @@ export class NFTGenerator {
           ipfsUri: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
         },
       })
+
+      // Mark as processed
+      this.eventTracker.markAsProcessed({
+        user: event.user,
+        timestamp: timestampNum,
+        baitType: Number(event.baitType),
+        amount: ethers.formatEther(event.amount),
+        blockNumber: event.event?.blockNumber,
+        transactionHash: txHash,
+      })
+
+      // Log stats
+      const stats = this.eventTracker.getStats()
+      console.log(
+        `📊 Events processed: ${stats.totalProcessed} (${stats.uniqueUsers} unique users)`
+      )
     } catch (error: any) {
       console.error("❌ Error processing event:", error)
       sseManager.sendProgress({
