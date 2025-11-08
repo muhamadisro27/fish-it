@@ -187,28 +187,17 @@ export default function FishDetailsModal({
         </div>
 
         <div className="px-6 py-5 border-t border-white/10 bg-[#081a36]/95 space-y-3">
-          <Button
-            onClick={() => console.log("Claim rewards")}
-            disabled={loading}
-            className="w-full gap-2 rounded-full bg-gradient-to-r from-[#21d4fd] via-[#0ab2ff] to-[#3d5fff] text-[#031226] font-semibold shadow-[0_18px_55px_-18px_rgba(9,193,255,0.95)] hover:shadow-[0_22px_65px_-18px_rgba(14,146,255,0.95)] transition-all"
-          >
-            {loading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Claiming...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                Claim Rewards
-              </>
-            )}
-          </Button>
+          <Card className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-3 text-xs text-cyan-100/80">
+            <p>
+              💡 <strong>NFT Details</strong>
+              <br />
+              This is your collected fish NFT. It's already in your aquarium!
+            </p>
+          </Card>
           <Button
             variant="outline"
             onClick={onClose}
             className="w-full rounded-full border border-white/20 bg-transparent text-cyan-100/80 hover:bg-white/10"
-            disabled={loading}
           >
             Close
           </Button>

@@ -132,10 +132,15 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEnteredCasting])
 
-  // Auto-enter strike when casting done
+  // Notify when casting is done - USER MUST CLICK BUTTON MANUALLY
   useEffect(() => {
     if (phase === "casting" && castingTimeLeft === BigInt(0)) {
-      enterStrike()
+      // DO NOT auto-trigger enterStrike() - this causes wallet to open automatically!
+      // Just show toast notification
+      toast({
+        title: "⚡ Ready to Strike!",
+        description: "Click 'Enter Strike Phase' button now!",
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, castingTimeLeft])
@@ -273,8 +278,8 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
                       key={bait}
                       onClick={() => setSelectedBait(baitType)}
                       className={`p-3 rounded-xl border-2 transition-all ${isSelected
-                          ? `${colors.border} ${colors.bg} scale-105`
-                          : "border-white/10 bg-white/5"
+                        ? `${colors.border} ${colors.bg} scale-105`
+                        : "border-white/10 bg-white/5"
                         }`}
                     >
                       <p className={`text-xs font-semibold ${colors.text}`}>
@@ -374,18 +379,38 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
 
       case "casting":
         const castingProgress = countdown > 0 ? ((60 - countdown) / 60) * 100 : 100
+        const readyToStrike = castingTimeLeft === BigInt(0)
+
         return (
           <div className="text-center space-y-6 py-8">
             <div className="text-6xl animate-bounce">🎣</div>
             <div>
               <h3 className="text-2xl font-bold text-white mb-2">Line Cast!</h3>
-              <p className="text-cyan-100/70">Waiting for a fish to bite...</p>
+              <p className="text-cyan-100/70">
+                {readyToStrike ? "A fish is biting!" : "Waiting for a fish to bite..."}
+              </p>
             </div>
             <div className="space-y-2">
               <Progress value={castingProgress} className="h-3" />
               <p className="text-3xl font-bold text-cyan-400">{countdown}s</p>
             </div>
-            <p className="text-sm text-cyan-100/60">Be ready to strike in {countdown} seconds!</p>
+
+            {readyToStrike ? (
+              <Button
+                onClick={() => enterStrike()}
+                disabled={isEnteringStrike}
+                size="lg"
+                className="w-full rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-xl py-6 animate-pulse"
+              >
+                {isEnteringStrike ? (
+                  <><Loader2 className="w-6 h-6 animate-spin mr-2" /> Entering Strike...</>
+                ) : (
+                  "⚡ ENTER STRIKE PHASE ⚡"
+                )}
+              </Button>
+            ) : (
+              <p className="text-sm text-cyan-100/60">Be ready to strike in {countdown} seconds!</p>
+            )}
           </div>
         )
 

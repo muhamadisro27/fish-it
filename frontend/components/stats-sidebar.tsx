@@ -3,26 +3,18 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Fish as FishIcon, Sparkles, Coins, Clock, Anchor, Gift, ShoppingCart, Trophy } from "lucide-react"
-import { BAIT_PRICES } from "@/types/fish"
+import { BAIT_PRICES, FishRarity } from "@/types/fish"
 import { useAccount } from "wagmi"
 import { useTokenBalance, useFaucetClaim, useFaucetCanClaim, useFaucetNextClaimTime, useBaitInventory, useBaitPrice, useStakeInfo, useClaimReward } from "@/lib/hooks/useContracts"
 import { formatUnits } from "viem"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import BuyBaitModal from "./buy-bait-modal"
+import { useNFTCollection } from "@/lib/hooks/useNFTCollection"
 
 interface StatsSidebarProps {
   selectedFishId: bigint | null
   onNFTClaimed?: () => void
-}
-
-// Hardcoded stats untuk demo (akan diganti dengan real data nanti)
-const MOCK_STATS = {
-  totalFish: 0,
-  commonFish: 0,
-  rareFish: 0,
-  epicFish: 0,
-  legendaryFish: 0,
 }
 
 export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSidebarProps) {
@@ -31,6 +23,18 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
   const [countdown, setCountdown] = useState<string>("")
   const [buyBaitModalOpen, setBuyBaitModalOpen] = useState(false)
   const [selectedBait, setSelectedBait] = useState<{ type: 0 | 1 | 2 | 3; name: string } | null>(null)
+
+  // NFT Collection hook - Get real stats
+  const { fish: nftCollection } = useNFTCollection()
+
+  // Calculate real stats from NFT collection
+  const aquariumStats = {
+    totalFish: nftCollection.length,
+    commonFish: nftCollection.filter(f => f.rarity === FishRarity.COMMON).length,
+    rareFish: nftCollection.filter(f => f.rarity === FishRarity.RARE).length,
+    epicFish: nftCollection.filter(f => f.rarity === FishRarity.EPIC).length,
+    legendaryFish: nftCollection.filter(f => f.rarity === FishRarity.LEGENDARY).length,
+  }
 
   // Blockchain hooks
   const { data: balance, refetch: refetchBalance } = useTokenBalance(address)
@@ -279,35 +283,35 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
                 <FishIcon className="w-4 h-4 text-[#29c0ff]" />
                 Total Fish
               </span>
-              <span className="text-white font-semibold">{MOCK_STATS.totalFish}</span>
+              <span className="text-white font-semibold">{aquariumStats.totalFish}</span>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0a264d]/70 px-4 py-3">
               <span className="flex items-center gap-2">
                 <FishIcon className="w-4 h-4 text-gray-300" />
                 Common
               </span>
-              <span className="text-white font-semibold">{MOCK_STATS.commonFish}</span>
+              <span className="text-white font-semibold">{aquariumStats.commonFish}</span>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0c2f5b]/70 px-4 py-3">
               <span className="flex items-center gap-2">
                 <FishIcon className="w-4 h-4 text-blue-300" />
                 Rare
               </span>
-              <span className="text-white font-semibold">{MOCK_STATS.rareFish}</span>
+              <span className="text-white font-semibold">{aquariumStats.rareFish}</span>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#1b1f5a]/70 px-4 py-3">
               <span className="flex items-center gap-2">
                 <FishIcon className="w-4 h-4 text-purple-300" />
                 Epic
               </span>
-              <span className="text-white font-semibold">{MOCK_STATS.epicFish}</span>
+              <span className="text-white font-semibold">{aquariumStats.epicFish}</span>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#311736]/70 px-4 py-3">
               <span className="flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-orange-300" />
                 Legendary
               </span>
-              <span className="text-white font-semibold">{MOCK_STATS.legendaryFish}</span>
+              <span className="text-white font-semibold">{aquariumStats.legendaryFish}</span>
             </div>
           </div>
         ) : (
