@@ -85,26 +85,34 @@ export default function FishDetailsModal({
         </div>
 
         <div className="overflow-y-auto flex-1">
+          {/* Full-width NFT Image - Optimized height for modal */}
+          <div
+            className={`relative w-full h-[45vh] max-h-[400px] min-h-[250px] flex items-center justify-center overflow-hidden bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]}`}
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(47,147,255,0.25),transparent_65%)]" />
+            {(() => {
+              const image = fish.metadata?.image
+              const isPlaceholder = image === "ipfs://placeholder"
+
+              if (!image || isPlaceholder) {
+                return (
+                  <div className="text-8xl group-hover:scale-105 transition-transform duration-300 relative z-10">
+                    {RARITY_EMOJIS[rarity]}
+                  </div>
+                )
+              }
+
+              return (
+                <img 
+                  src={image} 
+                  alt={fish.metadata?.name ?? "Fish"} 
+                  className="w-full h-full object-cover"
+                />
+              )
+            })()}
+          </div>
+
           <div className="p-6 space-y-5">
-            <div
-              className={`relative h-40 rounded-2xl flex items-center justify-center overflow-hidden bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]}`}
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(47,147,255,0.25),transparent_65%)]" />
-              {(() => {
-                const image = fish.metadata?.image
-                const isPlaceholder = image === "ipfs://placeholder"
-
-                if (!image || isPlaceholder) {
-                  return (
-                    <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
-                      {RARITY_EMOJIS[rarity]}
-                    </div>
-                  )
-                }
-
-                return <img src={image} alt={fish.metadata?.name ?? "Fish"} />
-              })()}
-            </div>
 
             <Card className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0b2347]/80 p-5 space-y-3">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(41,134,255,0.18),_transparent_60%)]" />

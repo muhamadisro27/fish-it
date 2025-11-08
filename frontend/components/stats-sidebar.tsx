@@ -164,29 +164,33 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
       {/* Quick Stats - Always Visible */}
       {isConnected && (
         <div className="grid grid-cols-2 gap-3">
-          {/* Balance Card */}
-          <Card className="relative overflow-hidden rounded-2xl border border-cyan-400/40 bg-gradient-to-br from-[#0a2145]/90 to-[#041432]/90 p-4 shadow-[0_20px_50px_-30px_rgba(6,182,212,0.5)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.15),_transparent_70%)]" />
+          {/* Balance Card - Enhanced with hover effects */}
+          <Card className="group relative overflow-hidden rounded-2xl border border-cyan-400/40 bg-gradient-to-br from-[#0a2145]/90 to-[#041432]/90 p-4 shadow-[0_20px_50px_-30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:shadow-[0_25px_60px_-25px_rgba(6,182,212,0.8)] hover:scale-[1.02] hover:border-cyan-400/60 cursor-pointer">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.15),_transparent_70%)] group-hover:bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.25),_transparent_60%)] transition-all duration-300" />
+            {/* Shimmer effect on hover */}
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
-                <Coins className="w-4 h-4 text-[#60f2ff]" />
-                <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-100/60">Balance</p>
+                <Coins className="w-4 h-4 text-[#60f2ff] group-hover:scale-110 transition-transform duration-300" />
+                <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-100/60 group-hover:text-cyan-100/80 transition-colors">Balance</p>
               </div>
-              <p className="text-2xl font-bold text-white">{displayBalance}</p>
-              <p className="text-xs text-cyan-100/70 mt-1">FSHT</p>
+              <p className="text-2xl font-bold text-white group-hover:text-cyan-50 transition-colors">{displayBalance}</p>
+              <p className="text-xs text-cyan-100/70 mt-1 group-hover:text-cyan-100/90 transition-colors">FSHT</p>
             </div>
           </Card>
 
-          {/* Fish Count Card */}
-          <Card className="relative overflow-hidden rounded-2xl border border-purple-400/40 bg-gradient-to-br from-[#1a0a2e]/90 to-[#0a0520]/90 p-4 shadow-[0_20px_50px_-30px_rgba(168,85,247,0.5)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.15),_transparent_70%)]" />
+          {/* Fish Count Card - Enhanced with hover effects */}
+          <Card className="group relative overflow-hidden rounded-2xl border border-purple-400/40 bg-gradient-to-br from-[#1a0a2e]/90 to-[#0a0520]/90 p-4 shadow-[0_20px_50px_-30px_rgba(168,85,247,0.5)] transition-all duration-300 hover:shadow-[0_25px_60px_-25px_rgba(168,85,247,0.8)] hover:scale-[1.02] hover:border-purple-400/60 cursor-pointer">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.15),_transparent_70%)] group-hover:bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.25),_transparent_60%)] transition-all duration-300" />
+            {/* Shimmer effect on hover */}
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
-                <FishIcon className="w-4 h-4 text-purple-300" />
-                <p className="text-[10px] uppercase tracking-[0.2em] text-purple-100/60">Collection</p>
+                <FishIcon className="w-4 h-4 text-purple-300 group-hover:scale-110 transition-transform duration-300" />
+                <p className="text-[10px] uppercase tracking-[0.2em] text-purple-100/60 group-hover:text-purple-100/80 transition-colors">Collection</p>
               </div>
-              <p className="text-2xl font-bold text-white">{aquariumStats.totalFish}</p>
-              <p className="text-xs text-purple-100/70 mt-1">Fish</p>
+              <p className="text-2xl font-bold text-white group-hover:text-purple-50 transition-colors">{aquariumStats.totalFish}</p>
+              <p className="text-xs text-purple-100/70 mt-1 group-hover:text-purple-100/90 transition-colors">Fish</p>
             </div>
           </Card>
         </div>
@@ -211,21 +215,28 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
               <Button
                 onClick={handleClaim}
                 disabled={!canClaim || isPending || isConfirming}
-                className="w-full rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-green-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group w-full rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-green-500/50 hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 relative overflow-hidden"
               >
+                {/* Ripple effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative z-10">
                 {isPending || isConfirming ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     {isPending ? "Confirm in wallet..." : "Claiming..."}
                   </span>
                 ) : canClaim ? (
-                  <span>🎁 Claim 10 FSHT</span>
+                  <span className="flex items-center gap-2">
+                    <span className="animate-bounce">🎁</span>
+                    Claim 10 FSHT
+                  </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     {countdown || "Loading..."}
                   </span>
                 )}
+                </div>
               </Button>
               
               {!canClaim && countdown && (
@@ -257,8 +268,11 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
               <Button
                 onClick={handleClaimNFT}
                 disabled={isNFTPending || isClaimingNFT}
-                className="w-full rounded-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white font-bold shadow-lg hover:shadow-yellow-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group w-full rounded-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white font-bold shadow-lg hover:shadow-yellow-500/50 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 relative overflow-hidden animate-pulse"
               >
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+                <div className="relative z-10">
                 {isNFTPending || isClaimingNFT ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -266,45 +280,46 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4" />
-                    🎁 Claim NFT Now!
+                    <Trophy className="w-4 h-4 animate-bounce" />
+                    <span className="animate-pulse">🎁 Claim NFT Now!</span>
                   </span>
                 )}
+                </div>
               </Button>
             </div>
           </div>
         </Card>
       )}
 
-      {/* Tabs Navigation */}
+      {/* Tabs Navigation - Enhanced with smooth transitions */}
       {isConnected && (
-        <div className="flex gap-2 p-1 rounded-2xl border border-white/10 bg-[#071a36]/60">
+        <div className="flex gap-2 p-1 rounded-2xl border border-white/10 bg-[#071a36]/60 backdrop-blur-sm">
           <button
             onClick={() => setActiveTab("shop")}
-            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
               activeTab === "shop"
-                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg"
-                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5"
+                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg shadow-cyan-500/30 scale-[1.02]"
+                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5 hover:scale-[1.01] active:scale-[0.98]"
             }`}
           >
             🛒 Shop
           </button>
           <button
             onClick={() => setActiveTab("stats")}
-            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
               activeTab === "stats"
-                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg"
-                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5"
+                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg shadow-cyan-500/30 scale-[1.02]"
+                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5 hover:scale-[1.01] active:scale-[0.98]"
             }`}
           >
             📊 Stats
           </button>
           <button
             onClick={() => setActiveTab("guide")}
-            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
               activeTab === "guide"
-                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg"
-                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5"
+                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg shadow-cyan-500/30 scale-[1.02]"
+                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5 hover:scale-[1.01] active:scale-[0.98]"
             }`}
           >
             📖 Guide
