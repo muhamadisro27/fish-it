@@ -30,10 +30,6 @@ export default function AppHeader({ schedulerRunning = false }: AppHeaderProps) 
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`
   }
 
-  // Format balance
-  const formattedBalance = balance ? formatUnits(balance, 18) : "0"
-  const displayBalance = parseFloat(formattedBalance).toFixed(2)
-
   return (
     <header className="sticky top-0 z-50 animate-slide-in-down">
       <div className="relative border-b border-white/10 backdrop-blur-xl shadow-[0_8px_32px_0_rgba(0,100,255,0.15)]">
@@ -49,29 +45,6 @@ export default function AppHeader({ schedulerRunning = false }: AppHeaderProps) 
               <h1 className="text-2xl font-semibold text-white">Web3 Fishing Game</h1>
             </div>
           </div>
-
-          {/* Center Stats (when connected) */}
-          {isConnected && (
-            <div className="hidden lg:flex items-center gap-4">
-              {/* Balance */}
-              <div className="flex items-center gap-2 rounded-full border border-cyan-400/40 bg-[#0a2145]/70 px-5 py-2.5">
-                <Coins className="w-4 h-4 text-[#60f2ff]" />
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-lg font-bold text-white">{displayBalance}</span>
-                  <span className="text-xs text-cyan-100/70">FSHT</span>
-                </div>
-              </div>
-
-              {/* Fish Count */}
-              <div className="flex items-center gap-2 rounded-full border border-purple-400/40 bg-[#1a0a2e]/70 px-5 py-2.5">
-                <Fish className="w-4 h-4 text-purple-300" />
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-lg font-bold text-white">{fish.length}</span>
-                  <span className="text-xs text-purple-100/70">Fish</span>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Right Actions */}
           <div className="flex items-center gap-3">

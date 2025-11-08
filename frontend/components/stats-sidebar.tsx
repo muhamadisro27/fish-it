@@ -161,7 +161,36 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
 
   return (
     <div className="space-y-4 sticky top-24">
-      {/* Priority Actions - Always Visible */}
+      {/* Quick Stats - Always Visible */}
+      {isConnected && (
+        <div className="grid grid-cols-2 gap-3">
+          {/* Balance Card */}
+          <Card className="relative overflow-hidden rounded-2xl border border-cyan-400/40 bg-gradient-to-br from-[#0a2145]/90 to-[#041432]/90 p-4 shadow-[0_20px_50px_-30px_rgba(6,182,212,0.5)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.15),_transparent_70%)]" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <Coins className="w-4 h-4 text-[#60f2ff]" />
+                <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-100/60">Balance</p>
+              </div>
+              <p className="text-2xl font-bold text-white">{displayBalance}</p>
+              <p className="text-xs text-cyan-100/70 mt-1">FSHT</p>
+            </div>
+          </Card>
+
+          {/* Fish Count Card */}
+          <Card className="relative overflow-hidden rounded-2xl border border-purple-400/40 bg-gradient-to-br from-[#1a0a2e]/90 to-[#0a0520]/90 p-4 shadow-[0_20px_50px_-30px_rgba(168,85,247,0.5)]">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.15),_transparent_70%)]" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <FishIcon className="w-4 h-4 text-purple-300" />
+                <p className="text-[10px] uppercase tracking-[0.2em] text-purple-100/60">Collection</p>
+              </div>
+              <p className="text-2xl font-bold text-white">{aquariumStats.totalFish}</p>
+              <p className="text-xs text-purple-100/70 mt-1">Fish</p>
+            </div>
+          </Card>
+        </div>
+      )}
       
       {/* Faucet Card */}
       {isConnected && (
