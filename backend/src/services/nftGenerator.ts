@@ -43,19 +43,19 @@ export class NFTGenerator {
       console.log("metadata", metadata)
 
       // Stage 2: Generate and upload image
-      console.log("🖼️  Generating fish image...")
-      sseManager.sendProgress({
-        user: event.user,
-        stage: "uploading_image",
-        message: "Creating unique fish artwork...",
-        data: { name: metadata.name, species: metadata.species },
-      })
+      // console.log("🖼️  Generating fish image...")
+      // sseManager.sendProgress({
+      //   user: event.user,
+      //   stage: "uploading_image",
+      //   message: "Creating unique fish artwork...",
+      //   data: { name: metadata.name, species: metadata.species },
+      // })
 
-      const imageuRL = await generateFishImage(
-        metadata.name,
-        metadata.species,
-        rarity
-      )
+      // const imageuRL = await generateFishImageWithModel(
+      //   metadata.name,
+      //   metadata.species,
+      //   rarity
+      // )
 
       const imageCid = `bafybeifwxamsy7m452o3s4hcomrqcfh4trhc2c52xrghdaooyoeist5ntm`
 
@@ -65,13 +65,13 @@ export class NFTGenerator {
         user: event.user,
         stage: "uploading_metadata",
         message: "Uploading NFT data to IPFS...",
-        data: { imageuRL },
+        data: { imageCid },
       })
 
       const fullMetadata: NFTMetadata = {
         ...metadata,
-        image: imageuRL,
-        external_url: imageuRL,
+        image: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+        external_url: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
       }
 
       const metadataCid = await uploadMetadataToPinata(fullMetadata)
@@ -98,7 +98,7 @@ export class NFTGenerator {
         message: "NFT ready to mint!",
         data: {
           metadata: fullMetadata,
-          imageUrl: imageuRL,
+          imageUrl: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
           metadataUrl: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
           ipfsUri: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
         },
