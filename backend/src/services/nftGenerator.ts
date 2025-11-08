@@ -43,21 +43,21 @@ export class NFTGenerator {
       console.log("metadata", metadata)
 
       // Stage 2: Generate and upload image
-      // console.log("🖼️  Generating fish image...")
-      // sseManager.sendProgress({
-      //   user: event.user,
-      //   stage: "uploading_image",
-      //   message: "Creating unique fish artwork...",
-      //   data: { name: metadata.name, species: metadata.species },
-      // })
+      console.log("🖼️  Generating fish image...")
+      sseManager.sendProgress({
+        user: event.user,
+        stage: "uploading_image",
+        message: "Creating unique fish artwork...",
+        data: { name: metadata.name, species: metadata.species },
+      })
 
-      // const imageuRL = await generateFishImageWithModel(
-      //   metadata.name,
-      //   metadata.species,
-      //   rarity
-      // )
+      const imageURL = await generateFishImage(
+        metadata.name,
+        metadata.species,
+        rarity
+      )
 
-      const imageCid = `bafybeifwxamsy7m452o3s4hcomrqcfh4trhc2c52xrghdaooyoeist5ntm`
+      // const imageCid = `bafybeifwxamsy7m452o3s4hcomrqcfh4trhc2c52xrghdaooyoeist5ntm`
 
       // Stage 3: Upload metadata with image URL
       console.log("📤 Uploading metadata to IPFS...")
@@ -65,13 +65,13 @@ export class NFTGenerator {
         user: event.user,
         stage: "uploading_metadata",
         message: "Uploading NFT data to IPFS...",
-        data: { imageCid },
+        data: { imageURL },
       })
 
       const fullMetadata: NFTMetadata = {
         ...metadata,
-        image: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
-        external_url: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+        image: imageURL,
+        external_url: imageURL,
       }
 
       const metadataCid = await uploadMetadataToPinata(fullMetadata)
@@ -98,7 +98,7 @@ export class NFTGenerator {
         message: "NFT ready to mint!",
         data: {
           metadata: fullMetadata,
-          imageUrl: `https://gateway.pinata.cloud/ipfs/${imageCid}`,
+          imageUrl: imageURL,
           metadataUrl: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
           ipfsUri: `https://gateway.pinata.cloud/ipfs/${metadataCid}`,
         },
