@@ -50,6 +50,10 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
   const [stakeAmount, setStakeAmount] = useState("10")
   const [countdown, setCountdown] = useState(0)
 
+  // Local loading states for immediate UI feedback
+  const [isStrikeLoading, setIsStrikeLoading] = useState(false)
+  const [isUnstakeLoading, setIsUnstakeLoading] = useState(false)
+
   // Blockchain hooks
   const { data: stakeInfo, refetch: refetchStakeInfo } = useStakeInfo(address)
 
@@ -166,6 +170,9 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     const timer = setTimeout(async () => {
       const updatedStakeInfo = await refetchStakeInfo()
 
+      // Reset loading state
+      setIsUnstakeLoading(false)
+
       // If stake still exists and in Strike state = SUCCESS
       // If stake deleted (state = 0 / Idle) = FAILED
       if (updatedStakeInfo.data && updatedStakeInfo.data[2] === 3) {
@@ -189,6 +196,24 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUnstaked])
+
+  // Reset strike loading when confirmed
+  useEffect(() => {
+    if (isEnteredStrike) {
+      setIsStrikeLoading(false)
+    }
+  }, [isEnteredStrike])
+
+  // Wrapper functions for immediate UI feedback
+  const handleEnterStrike = () => {
+    setIsStrikeLoading(true)
+    enterStrike()
+  }
+
+  const handleUnstake = () => {
+    setIsUnstakeLoading(true)
+    unstake()
+  }
 
   // Countdown timer for casting/strike
   useEffect(() => {
@@ -242,11 +267,6 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
 
     startFishing(stakeAmountBigInt, selectedBait)
     setPhase("starting")
-  }
-
-  // Handle unstake
-  const handleUnstake = () => {
-    unstake()
   }
 
   // Handle close
@@ -397,12 +417,12 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
 
             {readyToStrike ? (
               <Button
-                onClick={() => enterStrike()}
-                disabled={isEnteringStrike}
+                onClick={handleEnterStrike}
+                disabled={isStrikeLoading || isEnteringStrike}
                 size="lg"
-                className="w-full rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-xl py-6 animate-pulse"
+                className="w-full rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-xl py-6 animate-pulse disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
               >
-                {isEnteringStrike ? (
+                {(isStrikeLoading || isEnteringStrike) ? (
                   <><Loader2 className="w-6 h-6 animate-spin mr-2" /> Entering Strike...</>
                 ) : (
                   "⚡ ENTER STRIKE PHASE ⚡"
@@ -431,11 +451,11 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
             </div>
             <Button
               onClick={handleUnstake}
-              disabled={isUnstakePending || isUnstaking}
+              disabled={isUnstakeLoading || isUnstakePending || isUnstaking}
               size="lg"
-              className="w-full rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white font-bold text-xl py-6 animate-pulse"
+              className="w-full rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white font-bold text-xl py-6 animate-pulse disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
             >
-              {isUnstakePending || isUnstaking ? (
+              {(isUnstakeLoading || isUnstakePending || isUnstaking) ? (
                 <><Loader2 className="w-6 h-6 animate-spin mr-2" /> Unstaking...</>
               ) : (
                 "⚡ UNSTAKE NOW! ⚡"
