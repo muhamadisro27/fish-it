@@ -62,8 +62,8 @@ export default function FishDetailsModal({
 
   const rarity = fish.rarity as FishRarity
   const rarityKey = RARITY_NAMES[rarity]
-  const rewardMultiplier = FISH_REWARD_MULTIPLIERS[rarity]
-  const estimatedReward = fish.stakedAmount * rewardMultiplier
+  // Reward dari smart contract (1% flat, bukan multiplier rarity)
+  const actualReward = fish.rewardAmount || (fish.stakedAmount * 0.01)
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -85,26 +85,34 @@ export default function FishDetailsModal({
         </div>
 
         <div className="overflow-y-auto flex-1">
+          {/* Full-width NFT Image - Optimized height for modal */}
+          <div
+            className={`relative w-full h-[45vh] max-h-[400px] min-h-[250px] flex items-center justify-center overflow-hidden bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]}`}
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(47,147,255,0.25),transparent_65%)]" />
+            {(() => {
+              const image = fish.metadata?.image
+              const isPlaceholder = image === "ipfs://placeholder"
+
+              if (!image || isPlaceholder) {
+                return (
+                  <div className="text-8xl group-hover:scale-105 transition-transform duration-300 relative z-10">
+                    {RARITY_EMOJIS[rarity]}
+                  </div>
+                )
+              }
+
+              return (
+                <img 
+                  src={image} 
+                  alt={fish.metadata?.name ?? "Fish"} 
+                  className="w-full h-full object-cover"
+                />
+              )
+            })()}
+          </div>
+
           <div className="p-6 space-y-5">
-            <div
-              className={`relative h-40 rounded-2xl flex items-center justify-center overflow-hidden bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]}`}
-            >
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(47,147,255,0.25),transparent_65%)]" />
-              {(() => {
-                const image = fish.metadata?.image
-                const isPlaceholder = image === "ipfs://placeholder"
-
-                if (!image || isPlaceholder) {
-                  return (
-                    <div className="text-7xl group-hover:scale-105 transition-transform duration-300">
-                      {RARITY_EMOJIS[rarity]}
-                    </div>
-                  )
-                }
-
-                return <img src={image} alt={fish.metadata?.name ?? "Fish"} />
-              })()}
-            </div>
 
             <Card className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#0b2347]/80 p-5 space-y-3">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(41,134,255,0.18),_transparent_60%)]" />
@@ -162,13 +170,13 @@ export default function FishDetailsModal({
             <Card className="rounded-2xl border border-[#51f5c5]/35 bg-[#0a2e3d]/80 p-5 space-y-2 text-sm text-cyan-100/85">
               <div className="flex items-center gap-2 text-white">
                 <Coins className="w-4 h-4 text-[#61f6ca]" />
-                <span className="font-semibold">Estimated Reward</span>
+                <span className="font-semibold">Staking Reward</span>
               </div>
               <p className="text-2xl font-bold text-[#61f6ca]">
-                {estimatedReward} FISH
+                {actualReward.toFixed(2)} FSHT
               </p>
               <p className="text-xs text-cyan-100/70">
-                {rewardMultiplier}x multiplier for {rarityKey} rarity
+                1% reward from staked amount (smart contract)
               </p>
             </Card>
 
@@ -177,8 +185,7 @@ export default function FishDetailsModal({
                 🎣 <strong>Congratulations!</strong> You caught a {rarityKey}{" "}
                 {fish.species}!
                 <br />
-                💎 <strong>Rarity bonus</strong>: {rewardMultiplier}x reward
-                multiplier
+                💰 <strong>Staking Reward</strong>: 1% bonus ({actualReward.toFixed(2)} FSHT)
                 <br />
                 🪙 <strong>NFT</strong>: This fish is a unique ERC-721 token
               </p>
@@ -187,28 +194,17 @@ export default function FishDetailsModal({
         </div>
 
         <div className="px-6 py-5 border-t border-white/10 bg-[#081a36]/95 space-y-3">
-          <Button
-            onClick={() => console.log("Claim rewards")}
-            disabled={loading}
-            className="w-full gap-2 rounded-full bg-gradient-to-r from-[#21d4fd] via-[#0ab2ff] to-[#3d5fff] text-[#031226] font-semibold shadow-[0_18px_55px_-18px_rgba(9,193,255,0.95)] hover:shadow-[0_22px_65px_-18px_rgba(14,146,255,0.95)] transition-all"
-          >
-            {loading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Claiming...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4" />
-                Claim Rewards
-              </>
-            )}
-          </Button>
+          <Card className="rounded-2xl border border-cyan-500/30 bg-cyan-500/10 p-3 text-xs text-cyan-100/80">
+            <p>
+              💡 <strong>NFT Details</strong>
+              <br />
+              This is your collected fish NFT. It's already in your aquarium!
+            </p>
+          </Card>
           <Button
             variant="outline"
             onClick={onClose}
             className="w-full rounded-full border border-white/20 bg-transparent text-cyan-100/80 hover:bg-white/10"
-            disabled={loading}
           >
             Close
           </Button>

@@ -15,7 +15,7 @@ interface AquariumGridProps {
 export default function AquariumGrid({ onSelectFish, onCastLine }: AquariumGridProps) {
     const { isConnected } = useAccount()
     const { fish, isLoading, error, refetch, totalCount } = useNFTCollection()
-    
+
     const loading = isLoading
 
     return (
@@ -43,19 +43,21 @@ export default function AquariumGrid({ onSelectFish, onCastLine }: AquariumGridP
                         onClick={() => refetch()}
                         disabled={loading || !isConnected}
                         variant="outline"
-                        className="gap-2 rounded-full border-cyan-400/40 bg-[#0a2145]/70 px-5 py-2 text-cyan-100 hover:bg-[#103163]/80 hover:shadow-[0_12px_30px_-10px_rgba(18,143,255,0.6)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="group gap-2 rounded-full border-cyan-400/40 bg-[#0a2145]/70 px-5 py-2 text-cyan-100 hover:bg-[#103163]/80 hover:shadow-[0_12px_30px_-10px_rgba(18,143,255,0.6)] hover:border-cyan-400/60 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                         title="Refresh fish"
                     >
-                        <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`w-4 h-4 transition-transform duration-300 ${loading ? 'animate-spin' : 'group-hover:rotate-180'}`} />
                         Refresh
                     </Button>
                     <Button
                         onClick={onCastLine}
                         disabled={!isConnected}
-                        className="gap-2 rounded-full bg-gradient-to-r from-[#00c6ff] via-[#009dff] to-[#3d5fff] px-6 py-2 text-[#031226] font-semibold shadow-[0_16px_45px_-12px_rgba(9,193,255,0.9)] hover:shadow-[0_20px_55px_-12px_rgba(18,127,255,0.95)] hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="group gap-2 rounded-full bg-gradient-to-r from-[#00c6ff] via-[#009dff] to-[#3d5fff] px-6 py-2 text-[#031226] font-semibold shadow-[0_16px_45px_-12px_rgba(9,193,255,0.9)] hover:shadow-[0_20px_55px_-12px_rgba(18,127,255,0.95)] hover:-translate-y-0.5 hover:scale-105 active:scale-95 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:scale-100 relative overflow-hidden"
                     >
-                        <Plus className="w-4 h-4" />
-                        Cast Line
+                        {/* Shine effect on hover */}
+                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                        <Plus className="w-4 h-4 relative z-10 group-hover:rotate-90 transition-transform duration-300" />
+                        <span className="relative z-10">Cast Line</span>
                     </Button>
                 </div>
             </div>

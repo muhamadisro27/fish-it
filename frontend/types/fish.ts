@@ -19,6 +19,7 @@ export interface Fish {
   rarity: FishRarity
   weight: number
   stakedAmount: number
+  rewardAmount?: number // Reward dari staking (1% dari smart contract)
   baitType: string
   catchTime: number
   isCaught: boolean

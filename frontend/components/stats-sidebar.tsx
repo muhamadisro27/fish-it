@@ -3,26 +3,18 @@
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Fish as FishIcon, Sparkles, Coins, Clock, Anchor, Gift, ShoppingCart, Trophy } from "lucide-react"
-import { BAIT_PRICES } from "@/types/fish"
+import { BAIT_PRICES, FishRarity } from "@/types/fish"
 import { useAccount } from "wagmi"
 import { useTokenBalance, useFaucetClaim, useFaucetCanClaim, useFaucetNextClaimTime, useBaitInventory, useBaitPrice, useStakeInfo, useClaimReward } from "@/lib/hooks/useContracts"
 import { formatUnits } from "viem"
 import { useEffect, useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 import BuyBaitModal from "./buy-bait-modal"
+import { useNFTCollection } from "@/lib/hooks/useNFTCollection"
 
 interface StatsSidebarProps {
   selectedFishId: bigint | null
   onNFTClaimed?: () => void
-}
-
-// Hardcoded stats untuk demo (akan diganti dengan real data nanti)
-const MOCK_STATS = {
-  totalFish: 0,
-  commonFish: 0,
-  rareFish: 0,
-  epicFish: 0,
-  legendaryFish: 0,
 }
 
 export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSidebarProps) {
@@ -31,6 +23,19 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
   const [countdown, setCountdown] = useState<string>("")
   const [buyBaitModalOpen, setBuyBaitModalOpen] = useState(false)
   const [selectedBait, setSelectedBait] = useState<{ type: 0 | 1 | 2 | 3; name: string } | null>(null)
+  const [activeTab, setActiveTab] = useState<"shop" | "stats" | "guide">("shop")
+
+  // NFT Collection hook - Get real stats
+  const { fish: nftCollection } = useNFTCollection()
+
+  // Calculate real stats from NFT collection
+  const aquariumStats = {
+    totalFish: nftCollection.length,
+    commonFish: nftCollection.filter(f => f.rarity === FishRarity.COMMON).length,
+    rareFish: nftCollection.filter(f => f.rarity === FishRarity.RARE).length,
+    epicFish: nftCollection.filter(f => f.rarity === FishRarity.EPIC).length,
+    legendaryFish: nftCollection.filter(f => f.rarity === FishRarity.LEGENDARY).length,
+  }
 
   // Blockchain hooks
   const { data: balance, refetch: refetchBalance } = useTokenBalance(address)
@@ -156,6 +161,41 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
 
   return (
     <div className="space-y-4 sticky top-24">
+      {/* Quick Stats - Always Visible */}
+      {isConnected && (
+        <div className="grid grid-cols-2 gap-3">
+          {/* Balance Card - Enhanced with hover effects */}
+          <Card className="group relative overflow-hidden rounded-2xl border border-cyan-400/40 bg-gradient-to-br from-[#0a2145]/90 to-[#041432]/90 p-4 shadow-[0_20px_50px_-30px_rgba(6,182,212,0.5)] transition-all duration-300 hover:shadow-[0_25px_60px_-25px_rgba(6,182,212,0.8)] hover:scale-[1.02] hover:border-cyan-400/60 cursor-pointer">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.15),_transparent_70%)] group-hover:bg-[radial-gradient(circle_at_top_right,_rgba(6,182,212,0.25),_transparent_60%)] transition-all duration-300" />
+            {/* Shimmer effect on hover */}
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <Coins className="w-4 h-4 text-[#60f2ff] group-hover:scale-110 transition-transform duration-300" />
+                <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-100/60 group-hover:text-cyan-100/80 transition-colors">Balance</p>
+              </div>
+              <p className="text-2xl font-bold text-white group-hover:text-cyan-50 transition-colors">{displayBalance}</p>
+              <p className="text-xs text-cyan-100/70 mt-1 group-hover:text-cyan-100/90 transition-colors">FSHT</p>
+            </div>
+          </Card>
+
+          {/* Fish Count Card - Enhanced with hover effects */}
+          <Card className="group relative overflow-hidden rounded-2xl border border-purple-400/40 bg-gradient-to-br from-[#1a0a2e]/90 to-[#0a0520]/90 p-4 shadow-[0_20px_50px_-30px_rgba(168,85,247,0.5)] transition-all duration-300 hover:shadow-[0_25px_60px_-25px_rgba(168,85,247,0.8)] hover:scale-[1.02] hover:border-purple-400/60 cursor-pointer">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.15),_transparent_70%)] group-hover:bg-[radial-gradient(circle_at_top_right,_rgba(168,85,247,0.25),_transparent_60%)] transition-all duration-300" />
+            {/* Shimmer effect on hover */}
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-2">
+                <FishIcon className="w-4 h-4 text-purple-300 group-hover:scale-110 transition-transform duration-300" />
+                <p className="text-[10px] uppercase tracking-[0.2em] text-purple-100/60 group-hover:text-purple-100/80 transition-colors">Collection</p>
+              </div>
+              <p className="text-2xl font-bold text-white group-hover:text-purple-50 transition-colors">{aquariumStats.totalFish}</p>
+              <p className="text-xs text-purple-100/70 mt-1 group-hover:text-purple-100/90 transition-colors">Fish</p>
+            </div>
+          </Card>
+        </div>
+      )}
+      
       {/* Faucet Card */}
       {isConnected && (
         <Card className="relative overflow-hidden rounded-3xl border border-green-500/30 bg-gradient-to-br from-[#0a3d2e]/90 via-[#071d3d]/90 to-[#071d3d]/90 p-5 shadow-[0_25px_70px_-40px_rgba(34,197,94,0.5)] animate-slide-in-up transition-all duration-300 ease-out">
@@ -175,21 +215,28 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
               <Button
                 onClick={handleClaim}
                 disabled={!canClaim || isPending || isConfirming}
-                className="w-full rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-green-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group w-full rounded-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold shadow-lg hover:shadow-green-500/50 hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 relative overflow-hidden"
               >
+                {/* Ripple effect on hover */}
+                <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative z-10">
                 {isPending || isConfirming ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     {isPending ? "Confirm in wallet..." : "Claiming..."}
                   </span>
                 ) : canClaim ? (
-                  <span>🎁 Claim 10 FSHT</span>
+                  <span className="flex items-center gap-2">
+                    <span className="animate-bounce">🎁</span>
+                    Claim 10 FSHT
+                  </span>
                 ) : (
                   <span className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     {countdown || "Loading..."}
                   </span>
                 )}
+                </div>
               </Button>
               
               {!canClaim && countdown && (
@@ -221,8 +268,11 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
               <Button
                 onClick={handleClaimNFT}
                 disabled={isNFTPending || isClaimingNFT}
-                className="w-full rounded-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white font-bold shadow-lg hover:shadow-yellow-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group w-full rounded-full bg-gradient-to-r from-yellow-500 via-orange-500 to-red-500 text-white font-bold shadow-lg hover:shadow-yellow-500/50 hover:shadow-2xl hover:scale-[1.03] active:scale-[0.98] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 relative overflow-hidden animate-pulse"
               >
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-sm" />
+                <div className="relative z-10">
                 {isNFTPending || isClaimingNFT ? (
                   <span className="flex items-center gap-2">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -230,96 +280,60 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    <Trophy className="w-4 h-4" />
-                    🎁 Claim NFT Now!
+                    <Trophy className="w-4 h-4 animate-bounce" />
+                    <span className="animate-pulse">🎁 Claim NFT Now!</span>
                   </span>
                 )}
+                </div>
               </Button>
             </div>
           </div>
         </Card>
       )}
 
-      {/* Wallet Info - Updated with real balance */}
+      {/* Tabs Navigation - Enhanced with smooth transitions */}
       {isConnected && (
-        <Card
-          className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#071a36]/85 p-5 shadow-[0_25px_70px_-45px_rgba(12,95,255,0.6)] animate-slide-in-up transition-all duration-300 ease-out"
-          style={{ animationDelay: "0.05s" }}
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_-10%,rgba(0,184,255,0.3),transparent_65%)]" />
-          <div className="relative z-10 space-y-3">
-            <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
-              <Coins className="w-5 h-5 text-[#60f2ff]" />
-              Wallet
-            </h3>
-            <div className="p-3 rounded-2xl border border-white/10 bg-white/5">
-              <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-100/65">Address</p>
-              <p className="mt-2 font-mono text-xs text-white/85 truncate">{formattedAddress}</p>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl border border-[#1f8eff]/30 bg-[#0b2145]/70 px-4 py-3">
-              <p className="text-[11px] uppercase tracking-[0.25em] text-cyan-100/65">FSHT Balance</p>
-              <p className="text-base font-semibold text-white">{displayBalance} FSHT</p>
-            </div>
-          </div>
-        </Card>
+        <div className="flex gap-2 p-1 rounded-2xl border border-white/10 bg-[#071a36]/60 backdrop-blur-sm">
+          <button
+            onClick={() => setActiveTab("shop")}
+            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
+              activeTab === "shop"
+                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg shadow-cyan-500/30 scale-[1.02]"
+                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5 hover:scale-[1.01] active:scale-[0.98]"
+            }`}
+          >
+            🛒 Shop
+          </button>
+          <button
+            onClick={() => setActiveTab("stats")}
+            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
+              activeTab === "stats"
+                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg shadow-cyan-500/30 scale-[1.02]"
+                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5 hover:scale-[1.01] active:scale-[0.98]"
+            }`}
+          >
+            📊 Stats
+          </button>
+          <button
+            onClick={() => setActiveTab("guide")}
+            className={`flex-1 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
+              activeTab === "guide"
+                ? "bg-gradient-to-r from-[#00c6ff] to-[#009dff] text-[#031226] shadow-lg shadow-cyan-500/30 scale-[1.02]"
+                : "text-cyan-100/70 hover:text-cyan-100 hover:bg-white/5 hover:scale-[1.01] active:scale-[0.98]"
+            }`}
+          >
+            📖 Guide
+          </button>
+        </div>
       )}
 
-      {/* Aquarium Stats */}
-      <Card className="relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-[#071d3d]/85 p-5 shadow-[0_25px_70px_-40px_rgba(12,95,255,0.6)] animate-slide-in-up transition-all duration-300 ease-out" style={{ animationDelay: "0.1s" }}>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(42,119,255,0.2),_transparent_60%)]" />
-        <div className="relative z-10">
-          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
-            <FishIcon className="w-5 h-5 text-[#29c0ff]" />
-            Aquarium Stats
-          </h3>
-        {isConnected ? (
-          <div className="space-y-3 text-sm text-cyan-100/85">
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[0_10px_25px_-18px_rgba(27,167,255,0.35)]">
-              <span className="flex items-center gap-2">
-                <FishIcon className="w-4 h-4 text-[#29c0ff]" />
-                Total Fish
-              </span>
-              <span className="text-white font-semibold">{MOCK_STATS.totalFish}</span>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0a264d]/70 px-4 py-3">
-              <span className="flex items-center gap-2">
-                <FishIcon className="w-4 h-4 text-gray-300" />
-                Common
-              </span>
-              <span className="text-white font-semibold">{MOCK_STATS.commonFish}</span>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0c2f5b]/70 px-4 py-3">
-              <span className="flex items-center gap-2">
-                <FishIcon className="w-4 h-4 text-blue-300" />
-                Rare
-              </span>
-              <span className="text-white font-semibold">{MOCK_STATS.rareFish}</span>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#1b1f5a]/70 px-4 py-3">
-              <span className="flex items-center gap-2">
-                <FishIcon className="w-4 h-4 text-purple-300" />
-                Epic
-              </span>
-              <span className="text-white font-semibold">{MOCK_STATS.epicFish}</span>
-            </div>
-            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#311736]/70 px-4 py-3">
-              <span className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-orange-300" />
-                Legendary
-              </span>
-              <span className="text-white font-semibold">{MOCK_STATS.legendaryFish}</span>
-            </div>
-          </div>
-        ) : (
-          <p className="text-sm text-cyan-100/70 text-center py-4">Connect wallet to view stats</p>
-        )}
-        </div>
-      </Card>
-
+      {/* Tab Content */}
+      {isConnected && activeTab === "shop" && (
+        <>
       {/* Bait Shop */}
       <Card
         className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#071a36]/85 p-5 shadow-[0_25px_70px_-45px_rgba(12,95,255,0.55)] animate-slide-in-up transition-all duration-300 ease-out"
-        style={{ animationDelay: "0.15s" }}
+        style={{ animationDelay: "0.05s" }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(44,156,255,0.22),_transparent_60%)]" />
         <div className="relative z-10">
@@ -430,11 +444,71 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
           )}
         </div>
       </Card>
+        </>
+      )}
 
+      {isConnected && activeTab === "stats" && (
+        <>
+      {/* Aquarium Stats */}
+      <Card className="relative overflow-hidden rounded-3xl border border-cyan-500/20 bg-[#071d3d]/85 p-5 shadow-[0_25px_70px_-40px_rgba(12,95,255,0.6)] animate-slide-in-up transition-all duration-300 ease-out" style={{ animationDelay: "0.05s" }}>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(42,119,255,0.2),_transparent_60%)]" />
+        <div className="relative z-10">
+          <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+            <FishIcon className="w-5 h-5 text-[#29c0ff]" />
+            Aquarium Stats
+          </h3>
+        {isConnected ? (
+          <div className="space-y-3 text-sm text-cyan-100/85">
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 shadow-[0_10px_25px_-18px_rgba(27,167,255,0.35)]">
+              <span className="flex items-center gap-2">
+                <FishIcon className="w-4 h-4 text-[#29c0ff]" />
+                Total Fish
+              </span>
+              <span className="text-white font-semibold">{aquariumStats.totalFish}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0a264d]/70 px-4 py-3">
+              <span className="flex items-center gap-2">
+                <FishIcon className="w-4 h-4 text-gray-300" />
+                Common
+              </span>
+              <span className="text-white font-semibold">{aquariumStats.commonFish}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#0c2f5b]/70 px-4 py-3">
+              <span className="flex items-center gap-2">
+                <FishIcon className="w-4 h-4 text-blue-300" />
+                Rare
+              </span>
+              <span className="text-white font-semibold">{aquariumStats.rareFish}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#1b1f5a]/70 px-4 py-3">
+              <span className="flex items-center gap-2">
+                <FishIcon className="w-4 h-4 text-purple-300" />
+                Epic
+              </span>
+              <span className="text-white font-semibold">{aquariumStats.epicFish}</span>
+            </div>
+            <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-[#311736]/70 px-4 py-3">
+              <span className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-orange-300" />
+                Legendary
+              </span>
+              <span className="text-white font-semibold">{aquariumStats.legendaryFish}</span>
+            </div>
+          </div>
+        ) : (
+          <p className="text-sm text-cyan-100/70 text-center py-4">Connect wallet to view stats</p>
+        )}
+        </div>
+      </Card>
+        </>
+      )}
+
+      {isConnected && activeTab === "guide" && (
+        <>
       {/* How to Play */}
       <Card
         className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#071a36]/85 p-5 shadow-[0_25px_70px_-45px_rgba(12,95,255,0.55)] animate-slide-in-up transition-all duration-300 ease-out"
-        style={{ animationDelay: "0.2s" }}
+        style={{ animationDelay: "0.05s" }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(30,102,255,0.18),_transparent_60%)]" />
         <div className="relative z-10">
@@ -453,7 +527,7 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
       {/* Game Mechanics */}
       <Card
         className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#071a36]/85 p-5 shadow-[0_25px_70px_-45px_rgba(12,95,255,0.55)] animate-slide-in-up transition-all duration-300 ease-out"
-        style={{ animationDelay: "0.25s" }}
+        style={{ animationDelay: "0.1s" }}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom,_rgba(0,180,255,0.18),_transparent_65%)]" />
         <div className="relative z-10">
@@ -473,6 +547,8 @@ export default function StatsSidebar({ selectedFishId, onNFTClaimed }: StatsSide
           </div>
         </div>
       </Card>
+        </>
+      )}
 
       {/* Buy Bait Modal */}
       <BuyBaitModal

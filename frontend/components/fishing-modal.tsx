@@ -50,15 +50,19 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
   const [stakeAmount, setStakeAmount] = useState("10")
   const [countdown, setCountdown] = useState(0)
 
+  // Local loading states for immediate UI feedback
+  const [isStrikeLoading, setIsStrikeLoading] = useState(false)
+  const [isUnstakeLoading, setIsUnstakeLoading] = useState(false)
+
   // Blockchain hooks
   const { data: stakeInfo, refetch: refetchStakeInfo } = useStakeInfo(address)
-  
+
   // Fetch inventory for all 4 bait types
   const { data: commonBaitInventory } = useBaitInventory(address, 0)
   const { data: rareBaitInventory } = useBaitInventory(address, 1)
   const { data: epicBaitInventory } = useBaitInventory(address, 2)
   const { data: legendaryBaitInventory } = useBaitInventory(address, 3)
-  
+
   const { data: allowance, refetch: refetchAllowance } = useTokenAllowance(address, CONTRACTS.FishItStaking)
   const { data: castingTimeLeft } = useCastingTimeRemaining(address)
   const { data: strikeTimeLeft } = useStrikeTimeRemaining(address)
@@ -92,7 +96,7 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     if (!isOpen || !stakeInfo) return
 
     const [, , state] = stakeInfo
-    
+
     // State: 0=Idle, 1=Chumming, 2=Casting, 3=Strike, 4=ReadyToClaim
     if (state === 1) {
       setPhase("chumming")
@@ -132,10 +136,15 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEnteredCasting])
 
-  // Auto-enter strike when casting done
+  // Notify when casting is done - USER MUST CLICK BUTTON MANUALLY
   useEffect(() => {
     if (phase === "casting" && castingTimeLeft === BigInt(0)) {
-      enterStrike()
+      // DO NOT auto-trigger enterStrike() - this causes wallet to open automatically!
+      // Just show toast notification
+      toast({
+        title: "⚡ Ready to Strike!",
+        description: "Click 'Enter Strike Phase' button now!",
+      })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, castingTimeLeft])
@@ -160,7 +169,10 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     // Wait a bit for blockchain state to update, then check result
     const timer = setTimeout(async () => {
       const updatedStakeInfo = await refetchStakeInfo()
-      
+
+      // Reset loading state
+      setIsUnstakeLoading(false)
+
       // If stake still exists and in Strike state = SUCCESS
       // If stake deleted (state = 0 / Idle) = FAILED
       if (updatedStakeInfo.data && updatedStakeInfo.data[2] === 3) {
@@ -184,6 +196,24 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUnstaked])
+
+  // Reset strike loading when confirmed
+  useEffect(() => {
+    if (isEnteredStrike) {
+      setIsStrikeLoading(false)
+    }
+  }, [isEnteredStrike])
+
+  // Wrapper functions for immediate UI feedback
+  const handleEnterStrike = () => {
+    setIsStrikeLoading(true)
+    enterStrike()
+  }
+
+  const handleUnstake = () => {
+    setIsUnstakeLoading(true)
+    unstake()
+  }
 
   // Countdown timer for casting/strike
   useEffect(() => {
@@ -225,7 +255,7 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
       })
       return
     }
-    
+
     if (stakeAmountBigInt < parseUnits("1", 18)) {
       toast({
         title: "Minimum Stake",
@@ -237,11 +267,6 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
 
     startFishing(stakeAmountBigInt, selectedBait)
     setPhase("starting")
-  }
-
-  // Handle unstake
-  const handleUnstake = () => {
-    unstake()
   }
 
   // Handle close
@@ -272,11 +297,10 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
                     <button
                       key={bait}
                       onClick={() => setSelectedBait(baitType)}
-                      className={`p-3 rounded-xl border-2 transition-all ${
-                        isSelected
-                          ? `${colors.border} ${colors.bg} scale-105`
-                          : "border-white/10 bg-white/5"
-                      }`}
+                      className={`p-3 rounded-xl border-2 transition-all ${isSelected
+                        ? `${colors.border} ${colors.bg} scale-105`
+                        : "border-white/10 bg-white/5"
+                        }`}
                     >
                       <p className={`text-xs font-semibold ${colors.text}`}>
                         {BAIT_NAMES[bait]}
@@ -375,18 +399,38 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
 
       case "casting":
         const castingProgress = countdown > 0 ? ((60 - countdown) / 60) * 100 : 100
+        const readyToStrike = castingTimeLeft === BigInt(0)
+
         return (
           <div className="text-center space-y-6 py-8">
             <div className="text-6xl animate-bounce">🎣</div>
             <div>
               <h3 className="text-2xl font-bold text-white mb-2">Line Cast!</h3>
-              <p className="text-cyan-100/70">Waiting for a fish to bite...</p>
+              <p className="text-cyan-100/70">
+                {readyToStrike ? "A fish is biting!" : "Waiting for a fish to bite..."}
+              </p>
             </div>
             <div className="space-y-2">
               <Progress value={castingProgress} className="h-3" />
               <p className="text-3xl font-bold text-cyan-400">{countdown}s</p>
             </div>
-            <p className="text-sm text-cyan-100/60">Be ready to strike in {countdown} seconds!</p>
+
+            {readyToStrike ? (
+              <Button
+                onClick={handleEnterStrike}
+                disabled={isStrikeLoading || isEnteringStrike}
+                size="lg"
+                className="w-full rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold text-xl py-6 animate-pulse disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+              >
+                {(isStrikeLoading || isEnteringStrike) ? (
+                  <><Loader2 className="w-6 h-6 animate-spin mr-2" /> Entering Strike...</>
+                ) : (
+                  "⚡ ENTER STRIKE PHASE ⚡"
+                )}
+              </Button>
+            ) : (
+              <p className="text-sm text-cyan-100/60">Be ready to strike in {countdown} seconds!</p>
+            )}
           </div>
         )
 
@@ -407,11 +451,11 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
             </div>
             <Button
               onClick={handleUnstake}
-              disabled={isUnstakePending || isUnstaking}
+              disabled={isUnstakeLoading || isUnstakePending || isUnstaking}
               size="lg"
-              className="w-full rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white font-bold text-xl py-6 animate-pulse"
+              className="w-full rounded-full bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 text-white font-bold text-xl py-6 animate-pulse disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
             >
-              {isUnstakePending || isUnstaking ? (
+              {(isUnstakeLoading || isUnstakePending || isUnstaking) ? (
                 <><Loader2 className="w-6 h-6 animate-spin mr-2" /> Unstaking...</>
               ) : (
                 "⚡ UNSTAKE NOW! ⚡"
@@ -472,11 +516,11 @@ export default function FishingModal({ isOpen, onClose }: FishingModalProps) {
             </div>
             <DialogTitle className="text-2xl font-bold text-white">
               {phase === "select" || phase === "approve" ? "Start Fishing" :
-               phase === "casting" ? "Casting Line" :
-               phase === "strike" ? "STRIKE!" :
-               phase === "success" ? "Success!" :
-               phase === "failed" ? "Failed" :
-               "Fishing..."}
+                phase === "casting" ? "Casting Line" :
+                  phase === "strike" ? "STRIKE!" :
+                    phase === "success" ? "Success!" :
+                      phase === "failed" ? "Failed" :
+                        "Fishing..."}
             </DialogTitle>
           </div>
 

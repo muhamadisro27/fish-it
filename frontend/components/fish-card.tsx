@@ -77,15 +77,14 @@ export default function FishCard({ fish }: { fish: any }) {
         className={`h-48 flex items-center justify-center relative overflow-hidden transition-all duration-500 ease-out group-hover:brightness-110 bg-gradient-to-b ${RARITY_BACKGROUNDS[rarity]} ${RARITY_HOVER_BACKGROUNDS[rarity]}`}
       >
         <div
-          className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 ${
-            rarity === FishRarity.COMMON
-              ? "bg-gray-400/20 blur-xl"
-              : rarity === FishRarity.RARE
+          className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 ${rarity === FishRarity.COMMON
+            ? "bg-gray-400/20 blur-xl"
+            : rarity === FishRarity.RARE
               ? "bg-blue-400/20 blur-xl"
               : rarity === FishRarity.EPIC
-              ? "bg-purple-400/20 blur-xl"
-              : "bg-orange-400/20 blur-xl"
-          }`}
+                ? "bg-purple-400/20 blur-xl"
+                : "bg-orange-400/20 blur-xl"
+            }`}
         />
 
         {(() => {
@@ -102,7 +101,7 @@ export default function FishCard({ fish }: { fish: any }) {
 
           return <img src={image} alt={fish.metadata?.name ?? "Fish"} />
         })()}
-        
+
         {rarity === FishRarity.COMMON && (
           <>
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-32 h-2 bg-gray-600/20 dark:bg-gray-400/20 rounded-full" />
@@ -179,9 +178,20 @@ export default function FishCard({ fish }: { fish: any }) {
               Staked
             </span>
             <span className="text-muted-foreground font-medium">
-              {fish.stakedAmount} FISH
+              {fish.stakedAmount.toFixed(2)} FSHT
             </span>
           </div>
+          {fish.rewardAmount && fish.rewardAmount > 0 && (
+            <div className="flex items-center justify-between text-sm">
+              <span className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                <Sparkles className="w-4 h-4" />
+                Reward
+              </span>
+              <span className="text-green-600 dark:text-green-400 font-medium">
+                +{fish.rewardAmount.toFixed(2)} FSHT
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="text-xs text-muted-foreground space-y-1 pt-2 border-t border-border">
